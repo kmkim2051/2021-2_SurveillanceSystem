@@ -6,11 +6,12 @@ namespace surveillance_system
 {
     public partial class Program
     {
+        public static CCTV[] cctvs;
+        public static Pedestrian[] peds;
+
         static void Main(string[] args)
         {
-            CCTV[] cctvs;
-            Pedestrian[] peds;
-
+            Road road = new Road();
             /*------------------------------------------------------------------------
               % note 1) To avoid confusing, all input parameters for a distance has a unit as a milimeter
             -------------------------------------------------------------------------*/
@@ -96,6 +97,17 @@ namespace surveillance_system
             int[] CCTV_Y = new int[N_CCTV];
 
             cctvs = new CCTV[N_CCTV];
+            for (int i = 0; i < N_CCTV; i++)
+            {
+                cctvs[i] = new CCTV();
+            }
+            peds = new Pedestrian[N_Ped];
+            for (int i = 0; i < N_Ped; i++)
+            {
+                peds[i] = new Pedestrian();
+            }
+
+            cctvs = new CCTV[N_CCTV];
             peds = new Pedestrian[N_Ped];
 
             if (On_Road_Builder)
@@ -103,6 +115,20 @@ namespace surveillance_system
                 /* Line 76~89
                   RoadBuilder(), Calc_Dist_and_get_MinDist(), ...
                */
+                road.roadBuilder(Road_Width, Road_Interval, Road_N_Interval, N_CCTV, N_Ped);
+                road.printRoadInfo();
+
+                for (int i = 0; i < N_Ped; i++)
+                {
+                    Console.WriteLine("{0}번째 보행자 = ({1}, {2}) ", i + 1, peds[i].X, peds[i].Y);
+                }
+                Console.WriteLine("\n============================================================\n");
+                for (int i = 0; i < N_CCTV; i++)
+                {
+                    Console.WriteLine("{0}번째 cctv = ({1}, {2}) ", i + 1, cctvs[i].X, cctvs[i].Y);
+                }
+
+
                 // figure ...
                 for (int i = 0; i < N_CCTV; i++)
                 {
