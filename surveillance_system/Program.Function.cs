@@ -36,9 +36,8 @@ namespace surveillance_system
             // Idx_minDist = find(Dist_Map == minDist);
         }
 
-        public static void getResolution(Pedestrian[] PED, CCTV[] CCTV)
+        public static void getResolution(Pedestrian PED, CCTV[] CCTV)
         {
-            // 미완성
             // N_CCTV = length(CCTV.X); // why CCTV.X ..?
             int N_CCTV = CCTV.Length;
             double H_cosine0 = 0;
@@ -53,7 +52,14 @@ namespace surveillance_system
             bool V_Detected = false;
 
             // todo: for loop
-
+            // for i = 1:N_CCTV
+            //     [ d idx ] = min( abs(CCTV.H_FOV_X0(i)-PED.Pos_H1(1) + CCTV.X(i)) );
+            //     H_Xt1 = CCTV.H_FOV_X0(idx);
+            //     H_Yt1 = CCTV.H_FOV_Y0(idx);
+            //     A = [H_Xt1 H_Yt1];
+            //     B = [PED.Pos_H1(1)  PED.Pos_H1(2)] - [CCTV.X(i) CCTV.Y(i)];
+            //     H_cosine1 = dot(A,B)/( norm(A)*norm(B));
+            // end
             if (H_cosine0 <= H_cosine1 && H_cosine0 <= H_cosine2)
                 H_Detected = true;
             else
