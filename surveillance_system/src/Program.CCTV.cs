@@ -6,106 +6,168 @@ namespace surveillance_system
 {
     public partial class Program
     {
-      // 211126
-      // CCTV 내부의 H(V)_FOV_X(YZ)#,  시리즈: X0~2, Y0~2, Z0~2 대체
-      // todo: Horizon or Vertical 구분하는 type 변수 필요?
-      public class Angle3D
-      {
-        public double[] Angle_0;
-        public double[] Angle_1;
-        public double[] Angle_2;
-
-        public void Init_Angle012(int size)
+        // Angle 0,1,2 따로따로 3개씩 차례대로 나오는 구조를
+        // Angle3D 하나로 묶어서 다루기 위함
+        // (예시)
+        // Before)) X0, X1, X2
+        // After)) Angle3D X; 
+        //         X.Angle_0, X.Angle_1, X.Angle_2;
+        public class Angle3D
         {
-          if (size <= 0)
-            return;
-          Angle_0 = new double[size];
-          Angle_1 = new double[size];
-          Angle_2 = new double[size];
+            public double[] Angle_0;
+
+            public double[] Angle_1;
+
+            public double[] Angle_2;
+
+            public Angle3D(int size)
+            {
+                if (size <= 0) return;
+                Angle_0 = new double[size];
+                Angle_1 = new double[size];
+                Angle_2 = new double[size];
+            }
+
+            public void Set_Angle012(double a0, double a1, double a2, int index)
+            {
+                if (
+                    index < 0 ||
+                    index >= Angle_0.Length ||
+                    index >= Angle_1.Length ||
+                    index >= Angle_2.Length
+                ) return;
+                if (
+                    Angle_0.Length == 0 ||
+                    Angle_1.Length == 0 ||
+                    Angle_2.Length == 0
+                ) return;
+
+                Angle_0[index] = a0;
+                Angle_1[index] = a1;
+                Angle_2[index] = a2;
+            }
         }
-        public void Set_Angle012(double a0, double a1, double a2, int index)
+        // 211126
+        // H_FOV와 V_FOV를 하나의 클래스로 묶고자 작성
+        // CCTV 내부의 H(V)_FOV_X(YZ)#,  시리즈: X0~2, Y0~2, Z0~2 대체
+        // todo: Horizon or Vertical 구분하는 type 변수 필요?
+        public class FOV
         {
-          if(index < 0 || index >= Angle_0.Length || index >= Angle_1.Length || index >= Angle_2.Length)
-            return;
-          if (Angle_0.Length == 0 || Angle_1.Length == 0 || Angle_2.Length == 0)
-            return;
-            
-          Angle_0[index] = a0;
-          Angle_1[index] = a1;
-          Angle_2[index] = a2;
+            public Angle3D X;
+
+            public double[] X0;
+
+            public double[] X1;
+
+            public double[] X2;
+
+            // public Angle3D Y;
+            public double[] Y0;
+
+            public double[] Y1;
+
+            public double[] Y2;
+
+            // public Angle3D Z;
+            public double[] Z0;
+
+            public double[] Z1;
+
+            public double[] Z2;
+
+            // initialize with 'new' keyword
+            public void Init_X012(int size)
+            {
+                if (size <= 0) return;
+                X0 = new double[size];
+                X1 = new double[size];
+                X2 = new double[size];
+                X = new Angle3D(size);
+            }
+
+            public void Init_Y012(int size)
+            {
+                if (size <= 0) return;
+                Y0 = new double[size];
+                Y1 = new double[size];
+                Y2 = new double[size];
+                // Y.Init_Angle012(size);
+            }
+
+            public void Init_Z012(int size)
+            {
+                if (size <= 0) return;
+                Z0 = new double[size];
+                Z1 = new double[size];
+                Z2 = new double[size];
+                // Z.Init_Angle012(size);
+            }
+
+            // all setter WITH index
+            // set value to X0, X1, X2
+            public void Set_X012(
+                double X0_i,
+                double X1_i,
+                double X2_i,
+                int index
+            )
+            {
+                if (
+                    index < 0 ||
+                    index >= X0.Length ||
+                    index >= X1.Length ||
+                    index >= X2.Length
+                ) return;
+                if (X0.Length == 0 || X1.Length == 0 || X2.Length == 0) return;
+                X0[index] = X0_i;
+                X1[index] = X1_i;
+                X2[index] = X2_i;
+                // X.Set_Angle012(X0_i, X1_i, X2_i, index);
+            }
+
+            // set value to Y0, Y1, Y2
+            public void Set_Y012(
+                double Y0_i,
+                double Y1_i,
+                double Y2_i,
+                int index
+            )
+            {
+                if (
+                    index < 0 ||
+                    index >= Y0.Length ||
+                    index >= Y1.Length ||
+                    index >= Y2.Length
+                ) return;
+                if (Y0.Length == 0 || Y1.Length == 0 || Y2.Length == 0) return;
+                Y0[index] = Y0_i;
+                Y1[index] = Y1_i;
+                Y2[index] = Y2_i;
+                // X.Set_Angle012(X0_i, X1_i, X2_i, index);
+            }
+
+            // set value to Z0, Z1, Z2
+            public void Set_Z012(
+                double Z0_i,
+                double Z1_i,
+                double Z2_i,
+                int index
+            )
+            {
+                if (
+                    index < 0 ||
+                    index >= Z0.Length ||
+                    index >= Z1.Length ||
+                    index >= Z2.Length
+                ) return;
+                if (Z0.Length == 0 || Z1.Length == 0 || Z2.Length == 0) return;
+                Z0[index] = Z0_i;
+                Z1[index] = Z1_i;
+                Z2[index] = Z2_i;
+                // Z.Set_Angle012(X0_i, X1_i, X2_i, index);
+            }
         }
 
-      }
-
-      public class FOV
-      {
-        public double[] X0;
-        public double[] X1;
-        public double[] X2;
-        
-        public double[] Y0;
-        public double[] Y1;
-        public double[] Y2;
-
-        public double[] Z0;
-        public double[] Z1;
-        public double[] Z2;
-
-        // initialize with 'new' keyword
-        public void Init_X012(int size) {
-          if (size <= 0)
-            return;
-          X0 = new double[size];
-          X1 = new double[size];
-          X2 = new double[size];
-        }
-        public void Init_Y012(int size) {
-          if (size <= 0)
-            return;
-          Y0 = new double[size];
-          Y1 = new double[size];
-          Y2 = new double[size];
-        }
-        public void Init_Z012(int size) {
-          if (size <= 0)
-            return;
-          Z0 = new double[size];
-          Z1 = new double[size];
-          Z2 = new double[size];
-        }
-        // all setter WITH index
-        // set value to X0, X1, X2
-        public void Set_X012(double X0_i, double X1_i, double X2_i, int index) {
-          if(index < 0 || index >= X0.Length || index >= X1.Length || index >= X2.Length)
-            return;
-          if (X0.Length == 0 || X1.Length == 0 || X2.Length == 0)
-            return;
-          X0[index] = X0_i;
-          X1[index] = X1_i;
-          X2[index] = X2_i;
-        }
-        // set value to Y0, Y1, Y2
-        public void Set_Y012(double Y0_i, double Y1_i, double Y2_i, int index) {
-          if(index < 0 || index >= Y0.Length || index >= Y1.Length || index >= Y2.Length)
-            return;
-          if (Y0.Length == 0 || Y1.Length == 0 || Y2.Length == 0)
-            return;
-          Y0[index] = Y0_i;
-          Y1[index] = Y1_i;
-          Y2[index] = Y2_i;
-        }
-        // set value to Z0, Z1, Z2
-        public void Set_Z012(double Z0_i, double Z1_i, double Z2_i, int index) {
-          if(index < 0 || index >= Z0.Length || index >= Z1.Length || index >= Z2.Length)
-            return;
-          if (Z0.Length == 0 || Z1.Length == 0 || Z2.Length == 0)
-            return;
-          Z0[index] = Z0_i;
-          Z1[index] = Z1_i;
-          Z2[index] = Z2_i;
-        }
-
-      }
         public class CCTV
         {
             public int X;
@@ -138,8 +200,10 @@ namespace surveillance_system
 
             public double Direction;
 
-            // new FOV class member 
+            // new FOV class member
+
             public FOV H_FOV;
+
             public FOV V_FOV;
 
             public void get_H_FOV(
@@ -151,6 +215,11 @@ namespace surveillance_system
                 double Y
             )
             {
+                // 211126_2
+                Angle3D H_FOV_temp = new Angle3D(Dist.Length);
+                Angle3D H_X_temp = new Angle3D(Dist.Length);
+                Angle3D H_Y_temp = new Angle3D(Dist.Length);
+
                 double[] H_FOV_0 = new double[Dist.Length];
                 double[] H_FOV_1 = new double[Dist.Length];
                 double[] H_FOV_2 = new double[Dist.Length];
@@ -201,6 +270,7 @@ namespace surveillance_system
                     H_FOV_Y[1, i] = H_Y1[i] + Y;
                     H_FOV_Y[2, i] = H_Y2[i] + Y;
                 }
+
                 // 211126
                 // 아래 두 줄로 6줄 치환 가능
                 H_FOV.Init_X012(Dist.Length);
@@ -209,8 +279,16 @@ namespace surveillance_system
                 for (int i = 0; i < Dist.Length; i++)
                 {
                     // 211126
-                    H_FOV.Set_X012(H_FOV_X[0, i], H_FOV_X[1, i], H_FOV_X[2, i], i);
-                    H_FOV.Set_Y012(H_FOV_Y[0, i], H_FOV_Y[1, i], H_FOV_Y[2, i], i);
+                    H_FOV
+                        .Set_X012(H_FOV_X[0, i],
+                        H_FOV_X[1, i],
+                        H_FOV_X[2, i],
+                        i);
+                    H_FOV
+                        .Set_Y012(H_FOV_Y[0, i],
+                        H_FOV_Y[1, i],
+                        H_FOV_Y[2, i],
+                        i);
                 }
             }
 
@@ -223,20 +301,48 @@ namespace surveillance_system
                 double Z
             )
             {
+                // 211126_2
+                Angle3D V_FOV_temp = new Angle3D(Dist.Length);
+                Angle3D V_X_temp = new Angle3D(Dist.Length);
+                Angle3D V_Y_temp = new Angle3D(Dist.Length);
+
+                // 기존
                 double[] V_FOV_0 = new double[Dist.Length];
                 double[] V_FOV_1 = new double[Dist.Length];
                 double[] V_FOV_2 = new double[Dist.Length];
-
                 double[] V_X0 = new double[Dist.Length];
                 double[] V_X1 = new double[Dist.Length];
                 double[] V_X2 = new double[Dist.Length];
-
                 double[] V_Y0 = new double[Dist.Length];
                 double[] V_Y1 = new double[Dist.Length];
                 double[] V_Y2 = new double[Dist.Length];
 
                 for (int i = 0; i < Dist.Length; i++)
                 {
+                    // 211126_2
+                    double Dist_WD_FL = Dist[i] * WD / Focal_Length;
+                    double Dist_Cos_ViewAngle = Dist[i] * Math.Cos(ViewAngle);
+                    V_FOV_temp
+                        .Set_Angle012(0, Dist_WD_FL, (-1) * Dist_WD_FL, i);
+
+                    V_X_temp
+                        .Set_Angle012(Dist_Cos_ViewAngle -
+                        V_FOV_temp.Angle_0[i] * Math.Sin(ViewAngle),
+                        Dist_Cos_ViewAngle -
+                        V_FOV_temp.Angle_1[i] * Math.Sin(ViewAngle),
+                        Dist_Cos_ViewAngle -
+                        V_FOV_temp.Angle_2[i] * Math.Sin(ViewAngle),
+                        i);
+                    V_Y_temp
+                        .Set_Angle012(Dist_Cos_ViewAngle +
+                        V_FOV_temp.Angle_0[i] * Math.Sin(ViewAngle),
+                        Dist_Cos_ViewAngle +
+                        V_FOV_temp.Angle_1[i] * Math.Sin(ViewAngle),
+                        Dist_Cos_ViewAngle +
+                        V_FOV_temp.Angle_2[i] * Math.Sin(ViewAngle),
+                        i);
+
+                    // 기존
                     V_FOV_0[i] = 0;
                     V_FOV_1[i] = (1 / 2) * Dist[i] * WD / Focal_Length;
                     V_FOV_2[i] = (-1 / 2) * Dist[i] * WD / Focal_Length;
@@ -261,18 +367,34 @@ namespace surveillance_system
                         Dist[i] * Math.Sin(ViewAngle) +
                         V_FOV_2[i] * Math.Cos(ViewAngle);
                 }
+
+                // 211126_2
+                Angle3D V_FOV_X_temp = new Angle3D(Dist.Length);
+                Angle3D V_FOV_Y_temp = new Angle3D(Dist.Length);
+                Angle3D V_FOV_Z_temp = new Angle3D(Dist.Length);
+
+                // 기존
                 double[,] V_FOV_X = new double[3, Dist.Length];
                 double[,] V_FOV_Y = new double[3, Dist.Length];
 
                 for (int i = 0; i < Dist.Length; i++)
                 {
-                    V_FOV_X[0, i] = V_X0[i] + X;
-                    V_FOV_X[1, i] = V_X1[i] + X;
-                    V_FOV_X[2, i] = V_X2[i] + X;
-                    V_FOV_Y[0, i] = V_Y0[i] + Z;
-                    V_FOV_Y[1, i] = V_Y1[i] + Z;
-                    V_FOV_Y[2, i] = V_Y2[i] + Z;
+                    // V_FOV는 Y+Z ?
+                    V_FOV_X[0, i] = V_X_temp.Angle_0[i] + X;
+                    V_FOV_X[1, i] = V_X_temp.Angle_1[i] + X;
+                    V_FOV_X[2, i] = V_X_temp.Angle_2[i] + X;
+                    V_FOV_Y[0, i] = V_Y_temp.Angle_0[i] + Z;
+                    V_FOV_Y[1, i] = V_Y_temp.Angle_1[i] + Z;
+                    V_FOV_Y[2, i] = V_Y_temp.Angle_2[i] + Z;
+
+                    V_FOV_X_temp = V_X_temp.Angle_0[i] + X;
+                    V_FOV_X[1, i] = V_X_temp.Angle_1[i] + X;
+                    V_FOV_X[2, i] = V_X_temp.Angle_2[i] + X;
+                    V_FOV_Y[0, i] = V_Y_temp.Angle_0[i] + Z;
+                    V_FOV_Y[1, i] = V_Y_temp.Angle_1[i] + Z;
+                    V_FOV_Y[2, i] = V_Y_temp.Angle_2[i] + Z;
                 }
+
                 // 211126
                 V_FOV.Init_X012(Dist.Length);
                 V_FOV.Init_Y012(Dist.Length);
@@ -280,15 +402,20 @@ namespace surveillance_system
                 for (int i = 0; i < Dist.Length; i++)
                 {
                     // 211126
-                    V_FOV.Set_X012(V_FOV_X[0, i], V_FOV_X[1, i], V_FOV_X[2, i], i);
-                    V_FOV.Set_Y012(V_FOV_Y[0, i], V_FOV_Y[1, i], V_FOV_Y[2, i], i);
-
+                    V_FOV
+                        .Set_X012(V_FOV_X[0, i],
+                        V_FOV_X[1, i],
+                        V_FOV_X[2, i],
+                        i);
+                    V_FOV
+                        .Set_Y012(V_FOV_Y[0, i],
+                        V_FOV_Y[1, i],
+                        V_FOV_Y[2, i],
+                        i);
                 }
             }
 
-
             // public double Angle;
-
             public double[] SurvDist_H;
 
             public double[] SurvDist_V;
@@ -357,12 +484,21 @@ namespace surveillance_system
 
             public void printCCTVInfo()
             {
-                Console.WriteLine("======================Info======================");
-                Console.WriteLine("좌표 : ({0},{1},{2}) \n", this.X, this.Y, this.Z);
+                Console
+                    .WriteLine("======================Info======================");
+                Console
+                    .WriteLine("좌표 : ({0},{1},{2}) \n",
+                    this.X,
+                    this.Y,
+                    this.Z);
+
                 //Console.WriteLine("카메라 센서(너비, 높이) : ({0},{1}) \n", this.WD, this.HE);
                 //Console.WriteLine("imH imW: {0}, {1} \n", this.imH, this.imW);
                 //Console.WriteLine("초점거리 : {0} \n", this.Focal_Length);
-                Console.WriteLine("ViewAngleH : {0}  ViewAngleV: {1}  \n",this.ViewAngleH, this.ViewAngleV);
+                Console
+                    .WriteLine("ViewAngleH : {0}  ViewAngleV: {1}  \n",
+                    this.ViewAngleH,
+                    this.ViewAngleV);
                 //Console.WriteLine("H_AOV : {0}   V_AOV : {1} \n",  this.H_AOV, this.V_AOV);
             }
         }
