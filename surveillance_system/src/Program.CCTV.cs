@@ -9,6 +9,34 @@ namespace surveillance_system
       // 211126
       // CCTV 내부의 H(V)_FOV_X(YZ)#,  시리즈: X0~2, Y0~2, Z0~2 대체
       // todo: Horizon or Vertical 구분하는 type 변수 필요?
+      public class Angle3D
+      {
+        public double[] Angle_0;
+        public double[] Angle_1;
+        public double[] Angle_2;
+
+        public void Init_Angle012(int size)
+        {
+          if (size <= 0)
+            return;
+          Angle_0 = new double[size];
+          Angle_1 = new double[size];
+          Angle_2 = new double[size];
+        }
+        public void Set_Angle012(double a0, double a1, double a2, int index)
+        {
+          if(index < 0 || index >= Angle_0.Length || index >= Angle_1.Length || index >= Angle_2.Length)
+            return;
+          if (Angle_0.Length == 0 || Angle_1.Length == 0 || Angle_2.Length == 0)
+            return;
+            
+          Angle_0[index] = a0;
+          Angle_1[index] = a1;
+          Angle_2[index] = a2;
+        }
+
+      }
+
       public class FOV
       {
         public double[] X0;
@@ -45,6 +73,7 @@ namespace surveillance_system
           Z1 = new double[size];
           Z2 = new double[size];
         }
+        // all setter WITH index
         // set value to X0, X1, X2
         public void Set_X012(double X0_i, double X1_i, double X2_i, int index) {
           if(index < 0 || index >= X0.Length || index >= X1.Length || index >= X2.Length)
@@ -113,43 +142,6 @@ namespace surveillance_system
             public FOV H_FOV;
             public FOV V_FOV;
 
-            // old FOV member
-            public double[] H_FOV_X0;
-
-            public double[] H_FOV_X1;
-
-            public double[] H_FOV_X2;
-
-            public double[] H_FOV_Y0;
-
-            public double[] H_FOV_Y1;
-
-            public double[] H_FOV_Y2;
-
-            public double[] H_FOV_Z0;
-
-            public double[] H_FOV_Z1;
-
-            public double[] H_FOV_Z2;
-
-            public double[] V_FOV_X0;
-
-            public double[] V_FOV_X1;
-
-            public double[] V_FOV_X2;
-
-            public double[] V_FOV_Y0;
-
-            public double[] V_FOV_Y1;
-
-            public double[] V_FOV_Y2;
-
-            public double[] V_FOV_Z0;
-
-            public double[] V_FOV_Z1;
-
-            public double[] V_FOV_Z2;
-
             public void get_H_FOV(
                 double[] Dist,
                 double HE,
@@ -211,27 +203,14 @@ namespace surveillance_system
                 }
                 // 211126
                 // 아래 두 줄로 6줄 치환 가능
-                // H_FOV.Init_X012(Dist.Length);
-                // H_FOV.Init_Y012(Dist.Length);
-                H_FOV_X0 = new double[Dist.Length];
-                H_FOV_X1 = new double[Dist.Length];
-                H_FOV_X2 = new double[Dist.Length];
-
-                H_FOV_Y0 = new double[Dist.Length];
-                H_FOV_Y1 = new double[Dist.Length];
-                H_FOV_Y2 = new double[Dist.Length];
+                H_FOV.Init_X012(Dist.Length);
+                H_FOV.Init_Y012(Dist.Length);
 
                 for (int i = 0; i < Dist.Length; i++)
                 {
                     // 211126
-                    // H_FOV.Set_X012(H_FOV_X[0, i], H_FOV_X[1, i], H_FOV_X[2, i], i);
-                    H_FOV_X0[i] = H_FOV_X[0, i];
-                    H_FOV_X1[i] = H_FOV_X[1, i];
-                    H_FOV_X2[i] = H_FOV_X[2, i];
-                    // H_FOV.Set_Y012(H_FOV_Y[0, i], H_FOV_Y[1, i], H_FOV_Y[2, i], i);
-                    H_FOV_Y0[i] = H_FOV_Y[0, i];
-                    H_FOV_Y1[i] = H_FOV_Y[1, i];
-                    H_FOV_Y2[i] = H_FOV_Y[2, i];
+                    H_FOV.Set_X012(H_FOV_X[0, i], H_FOV_X[1, i], H_FOV_X[2, i], i);
+                    H_FOV.Set_Y012(H_FOV_Y[0, i], H_FOV_Y[1, i], H_FOV_Y[2, i], i);
                 }
             }
 
@@ -295,28 +274,15 @@ namespace surveillance_system
                     V_FOV_Y[2, i] = V_Y2[i] + Z;
                 }
                 // 211126
-                // V_FOV.Init_X012(Dist.Length);
-                // V_FOV.Init_Y012(Dist.Length);
-                V_FOV_X0 = new double[Dist.Length];
-                V_FOV_X1 = new double[Dist.Length];
-                V_FOV_X2 = new double[Dist.Length];
-
-                V_FOV_Y0 = new double[Dist.Length];
-                V_FOV_Y1 = new double[Dist.Length];
-                V_FOV_Y2 = new double[Dist.Length];
+                V_FOV.Init_X012(Dist.Length);
+                V_FOV.Init_Y012(Dist.Length);
 
                 for (int i = 0; i < Dist.Length; i++)
                 {
                     // 211126
-                    // V_FOV.Set_X012(V_FOV_X[0, i], V_FOV_X[1, i], V_FOV_X[2, i], i);
-                    // V_FOV.Set_Y012(V_FOV_Y[0, i], V_FOV_Y[1, i], V_FOV_Y[2, i], i);
-                    V_FOV_X0[i] = V_FOV_X[0, i];
-                    V_FOV_X1[i] = V_FOV_X[1, i];
-                    V_FOV_X2[i] = V_FOV_X[2, i];
+                    V_FOV.Set_X012(V_FOV_X[0, i], V_FOV_X[1, i], V_FOV_X[2, i], i);
+                    V_FOV.Set_Y012(V_FOV_Y[0, i], V_FOV_Y[1, i], V_FOV_Y[2, i], i);
 
-                    V_FOV_Y0[i] = V_FOV_Y[0, i];
-                    V_FOV_Y1[i] = V_FOV_Y[1, i];
-                    V_FOV_Y2[i] = V_FOV_Y[2, i];
                 }
             }
 
