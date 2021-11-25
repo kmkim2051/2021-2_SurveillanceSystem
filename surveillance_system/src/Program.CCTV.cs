@@ -6,6 +6,22 @@ namespace surveillance_system
 {
     public partial class Program
     {
+      public class FOV
+      {
+        public double[] X0;
+        public double[] X1;
+        public double[] X2;
+        
+        public double[] Y0;
+        public double[] Y1;
+        public double[] Y2;
+
+        public double[] Z0;
+        public double[] Z1;
+        public double[] Z2;
+
+
+      }
         public class CCTV
         {
             public int X;
