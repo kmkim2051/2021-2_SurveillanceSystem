@@ -234,9 +234,7 @@ namespace surveillance_system
 
 
             // public double Angle;
-            /* ==================================
-            /   추가 line 45~ 51 변수 ,  get_PixelDensity 함수 (깃허브 get_PixelDensity.m)
-            / ===================================*/
+
             public double[] SurvDist_H;
 
             public double[] SurvDist_V;
@@ -301,6 +299,17 @@ namespace surveillance_system
                     idx = findMinIdx(temp);
                     SurvDist_V[i] = Dist_Meter[idx] * 0.003;
                 }
+            }
+
+            public void printCCTVInfo()
+            {
+                Console.WriteLine("======================Info======================");
+                Console.WriteLine("좌표 : ({0},{1},{2}) \n", this.X, this.Y, this.Z);
+                //Console.WriteLine("카메라 센서(너비, 높이) : ({0},{1}) \n", this.WD, this.HE);
+                //Console.WriteLine("imH imW: {0}, {1} \n", this.imH, this.imW);
+                //Console.WriteLine("초점거리 : {0} \n", this.Focal_Length);
+                Console.WriteLine("ViewAngleH : {0}  ViewAngleV: {1}  \n",this.ViewAngleH, this.ViewAngleV);
+                //Console.WriteLine("H_AOV : {0}   V_AOV : {1} \n",  this.H_AOV, this.V_AOV);
             }
         }
     }

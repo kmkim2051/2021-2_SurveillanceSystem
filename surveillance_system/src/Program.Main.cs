@@ -143,9 +143,14 @@ namespace surveillance_system
                     ped.printPedInfo();
                 }
 
+
+                Console.WriteLine("\n============================================================\n\n\n");
+
                 // cctv 
                 for (int i = 0; i < N_CCTV; i++)
                 {
+
+
                     cctvs[i].Z =
                         (int)Math.Ceiling(rand.NextDouble() * (Height.Max() - 3000)) + 3000; // milimeter
                     cctvs[i].WD = WD;
@@ -207,6 +212,8 @@ namespace surveillance_system
                     CCTV(i).H_FOV_Y1(1,:) = FOV_Y(2,:);
                     CCTV(i).H_FOV_Y2(1,:) = FOV_Y(3,:);
                   */
+
+                    cctvs[i].printCCTVInfo();
                 }
             }
 
