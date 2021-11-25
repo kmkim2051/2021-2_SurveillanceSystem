@@ -52,13 +52,11 @@ namespace surveillance_system
 
             public int N_Surv; //number of surveillance camera viewing this target.
 
-            //public int TTL;
+            public int TTL;
             public void define_PED(
                 double Width,
                 double Height,
                 double Direction,
-                double X,
-                double Y,
                 double DST_X,
                 double DST_Y,
                 double Velocity
@@ -73,35 +71,42 @@ namespace surveillance_system
                 this.D2 = 180 + 90 * rand.NextDouble();
                 this.W2 = this.W / 2;
 
-                //  PED.Pos_H1 = [PED.W2*cosd(PED.D1+PED.Dir) PED.W2*sind(PED.D1+PED.Dir)]+[X Y];
                 this.Pos_H1[0] =
-                    this.W2 * Math.Cos(D1 + this.Direction) + this.X;
+                    Math.Round(this.W2 * Math.Cos(D1 + this.Direction) + this.X,2);
                 this.Pos_H1[1] =
-                    this.W2 * Math.Sin(D1 + this.Direction) + this.Y;
-
-                //  PED.Pos_H2 = [PED.W2*cosd(PED.D2+PED.Dir) PED.W2*sind(PED.D2+PED.Dir)]+[X Y];
+                    Math.Round(this.W2 * Math.Sin(D1 + this.Direction) + this.Y,2);
                 this.Pos_H2[0] =
-                    this.W2 * Math.Cos(D2 + this.Direction) + this.X;
+                    Math.Round(this.W2 * Math.Cos(D2 + this.Direction) + this.X,2);
                 this.Pos_H2[1] =
-                    this.W2 * Math.Sin(D2 + this.Direction) + this.Y;
+                    Math.Round(this.W2 * Math.Sin(D2 + this.Direction) + this.Y,2);
 
-                // PED.Pos_V1 = [X Height];
                 this.Pos_V1[0] = this.X;
                 this.Pos_V1[1] = this.H;
 
-                //  PED.Pos_V2 = [X 0];
                 this.Pos_V2[0] = this.X;
                 this.Pos_V2[1] = 0;
 
-                this.X = X;
-                this.Y = Y;
                 this.DST_X = DST_X;
                 this.DST_Y = DST_Y;
                 this.Velocity = Velocity;
 
                 // % for performace measure
                 this.N_Surv = 0;
-                //this.TTL = 0;
+            }
+
+            public void printPedInfo()
+            {
+                Console.WriteLine("======================Info======================");
+                Console.WriteLine("출발지 : ({0},{1}) \n", this.X, this.Y);
+                Console.WriteLine("목적지 : ({0},{1}) \n", this.DST_X, this.DST_Y);
+                Console.WriteLine("방향 각도(라디안) : {0} \n", this.Direction);
+                Console.WriteLine("속도 : {0} \n", this.Velocity);
+                Console.WriteLine("Pos_H1 : ({0},{1})   Pos_H2 : ({2},{3})  \n", 
+                    this.Pos_H1[0], this.Pos_H1[1], this.Pos_H2[0], this.Pos_H2[1]);
+                Console.WriteLine("Pos_V1 : ({0},{1})   Pos_V2 : ({2},{3}) \n",
+                    this.Pos_V1[0], this.Pos_V1[1], this.Pos_V2[0], this.Pos_V2[1]);
+                Console.WriteLine("TTL : {0} \n", this.TTL);
+
             }
         }
     }

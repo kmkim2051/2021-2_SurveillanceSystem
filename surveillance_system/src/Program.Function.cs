@@ -7,33 +7,24 @@ namespace surveillance_system
 {
     partial class Program
     {
-        public static void Calc_Dist_and_get_MinDist(double[] List_Pos1_X,
-                                              double[] List_Pos1_Y,
-                                              double[] Pos2_X,
-                                              double[] Pos2_Y,
+        public static void Calc_Dist_and_get_MinDist(double[,] List_Pos1, // 목적지 좌표 리스트
+                                              double Pos2_X, // 보행자 x좌표
+                                              double Pos2_Y, // 보행자 y좌표
                                               ref double[] Dist_Map, // for multiple return
                                               ref double minDist,
                                               ref int Idx_minDist
                                             )
         {
-            // N_Pos1 = length(List_Pos1_X);
-            int N_Pos1 = List_Pos1_X.Length;
-            // % N_Pos2 = length(Pos2_X);
-            // int N_Pos2 = Pos2_X.Length;
+            int N_Pos1 = List_Pos1.GetLength(0);
 
-            // Dist_Map = zeros(1, N_Pos1);
-            for (int i = 0; i < Dist_Map.Length; i++)
+            for (int i = 0; i < N_Pos1; i++)
             {
-                Dist_Map[i] = Math.Sqrt((List_Pos1_X[i] - Pos2_X[i]) * (List_Pos1_X[i] - Pos2_X[i])
-                                        + (List_Pos1_Y[i] - Pos2_Y[i]) * (List_Pos1_Y[i] - Pos2_Y[i]));
+                Dist_Map[i] = Math.Sqrt((List_Pos1[i,0] - Pos2_X) * (List_Pos1[i,0] - Pos2_X)
+                                        + (List_Pos1[i,1] - Pos2_Y) * (List_Pos1[i,1] - Pos2_Y));
             }
-            // parfor i = 1:N_Pos1
-            //         Dist_Map(i) = sqrt( (List_Pos1_X(i)-Pos2_X)^2 + (List_Pos1_Y(i)-Pos2_Y)^2 );  
-            // end
+
             minDist = Dist_Map.Min();
             Idx_minDist = Array.IndexOf(Dist_Map, minDist);
-            // minDist = min(Dist_Map);
-            // Idx_minDist = find(Dist_Map == minDist);
         }
 
         public static void getResolution(Pedestrian PED, CCTV[] CCTV)

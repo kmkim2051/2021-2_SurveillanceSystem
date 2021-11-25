@@ -21,7 +21,7 @@ namespace surveillance_system
 
         public static double Norm(double[] a)
         {
-            return a.Sum() / a.Length;
+            return Math.Sqrt(a[0] * a[0] + a[1] * a[1]);
         }
 
         public static double RadToDeg(double angle)

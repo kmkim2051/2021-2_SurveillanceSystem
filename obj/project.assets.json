@@ -14,11 +14,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\myk19\\Desktop\\2021-2_SurveillanceSystem\\surveillance_system\\surveillance_system.csproj",
+      "projectUniqueName": "C:\\Users\\myk19\\Desktop\\2021-2_SurveillanceSystem\\surveillance_system.csproj",
       "projectName": "surveillance_system",
-      "projectPath": "C:\\Users\\myk19\\Desktop\\2021-2_SurveillanceSystem\\surveillance_system\\surveillance_system.csproj",
+      "projectPath": "C:\\Users\\myk19\\Desktop\\2021-2_SurveillanceSystem\\surveillance_system.csproj",
       "packagesPath": "C:\\Users\\myk19\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\myk19\\Desktop\\2021-2_SurveillanceSystem\\surveillance_system\\obj\\",
+      "outputPath": "C:\\Users\\myk19\\Desktop\\2021-2_SurveillanceSystem\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"

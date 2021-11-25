@@ -90,12 +90,6 @@ namespace surveillance_system
             // Configuration: simulation time
             const double aUnitTime = 100 * 0.001;
 
-            // line_75
-            // 격자형태 도로 구성 (도로 길이, 구간 길이 등)
-            // 이 부분은 다음에?
-            int[] CCTV_X = new int[N_CCTV];
-            int[] CCTV_Y = new int[N_CCTV];
-
             cctvs = new CCTV[N_CCTV];
             for (int i = 0; i < N_CCTV; i++)
             {
@@ -107,14 +101,8 @@ namespace surveillance_system
                 peds[i] = new Pedestrian();
             }
 
-            cctvs = new CCTV[N_CCTV];
-            peds = new Pedestrian[N_Ped];
-
             if (On_Road_Builder)
             {
-                /* Line 76~89
-                  RoadBuilder(), Calc_Dist_and_get_MinDist(), ...
-               */
                 road.roadBuilder(Road_Width, Road_Interval, Road_N_Interval, N_CCTV, N_Ped);
                 road.printRoadInfo();
 
@@ -128,13 +116,36 @@ namespace surveillance_system
                     Console.WriteLine("{0}번째 cctv = ({1}, {2}) ", i + 1, cctvs[i].X, cctvs[i].Y);
                 }
 
+                //ped
+                foreach(Pedestrian ped in peds)
+                {
+                    double minDist = 0.0;
+                    int idx_minDist = 0;
+                    double[] Dist_Map = new double[road.DST.GetLength(0)];
+                    
+                    Calc_Dist_and_get_MinDist(road.DST, ped.X, ped.Y, ref Dist_Map, ref minDist, ref idx_minDist);
+                    double dst_x = road.DST[idx_minDist, 0];
+                    double dst_y = road.DST[idx_minDist, 1];
 
-                // figure ...
+                    Console.WriteLine("\n============================================================\n");
+                    Console.WriteLine("{0}번째 보행자 -  {1}번째 목적지(좌표: {2}, {3}) ",
+                        Array.IndexOf(peds, ped), idx_minDist, dst_x, dst_y);
+
+                    // 보행자~목적지 벡터
+                    double[] A = new double[2];
+                    A[0] = dst_x - ped.X;
+                    A[1] = dst_y - ped.Y;
+
+                    double[] B = { 0.001, 0.001 };
+                    double direction = Math.Round(Math.Acos(InnerProduct(A, B) / (Norm(A) * Norm(B))),2);
+                    ped.define_PED(Ped_Width, Ped_Height, direction, dst_x, dst_y, Ped_Velocity);
+                    ped.TTL = (int)Math.Ceiling((minDist / ped.Velocity) / aUnitTime);
+                    ped.printPedInfo();
+                }
+
+                // cctv 
                 for (int i = 0; i < N_CCTV; i++)
                 {
-                    // 추가 -> CCTV 객체 배열 cctvs로 변경
-                    cctvs[i].X = CCTV_X[i]; // milimeter
-                    cctvs[i].Y = CCTV_Y[i]; // milimeter
                     cctvs[i].Z =
                         (int)Math.Ceiling(rand.NextDouble() * (Height.Max() - 3000)) + 3000; // milimeter
                     cctvs[i].WD = WD;
@@ -144,15 +155,6 @@ namespace surveillance_system
                     cctvs[i].Focal_Length = Lens_FocalLength;
                     cctvs[i].ViewAngleH = rand.NextDouble() * 360;
                     cctvs[i].ViewAngleV = -35 - 20 * rand.NextDouble();
-
-                    /*
-                    %         Temp_ViewAngleH = CCTV.ViewAngleH(i);
-                    %         if (Temp_ViewAngleH >= 90 && Temp_ViewAngleH <= 270) 
-                    %             CCTV.ViewAngleV(i) = -90 + ceil(rand*-90);
-                    %         else
-                    %             CCTV.ViewAngleV(i) = ceil(rand*-90);
-                    %         end
-                    */
                     cctvs[i].H_AOV = 2 * Math.Atan(WD / (2 * Lens_FocalLength));
                     cctvs[i].V_AOV = 2 * Math.Atan(WD / (2 * Lens_FocalLength));
 
