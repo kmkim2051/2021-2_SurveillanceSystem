@@ -306,17 +306,6 @@ namespace surveillance_system
                 Angle3D V_X_temp = new Angle3D(Dist.Length);
                 Angle3D V_Y_temp = new Angle3D(Dist.Length);
 
-                // 기존
-                double[] V_FOV_0 = new double[Dist.Length];
-                double[] V_FOV_1 = new double[Dist.Length];
-                double[] V_FOV_2 = new double[Dist.Length];
-                double[] V_X0 = new double[Dist.Length];
-                double[] V_X1 = new double[Dist.Length];
-                double[] V_X2 = new double[Dist.Length];
-                double[] V_Y0 = new double[Dist.Length];
-                double[] V_Y1 = new double[Dist.Length];
-                double[] V_Y2 = new double[Dist.Length];
-
                 for (int i = 0; i < Dist.Length; i++)
                 {
                     // 211126_2
@@ -324,7 +313,6 @@ namespace surveillance_system
                     double Dist_Cos_ViewAngle = Dist[i] * Math.Cos(ViewAngle);
                     V_FOV_temp
                         .Set_Angle012(0, Dist_WD_FL, (-1) * Dist_WD_FL, i);
-
                     V_X_temp
                         .Set_Angle012(Dist_Cos_ViewAngle -
                         V_FOV_temp.Angle_0[i] * Math.Sin(ViewAngle),
@@ -332,7 +320,8 @@ namespace surveillance_system
                         V_FOV_temp.Angle_1[i] * Math.Sin(ViewAngle),
                         Dist_Cos_ViewAngle -
                         V_FOV_temp.Angle_2[i] * Math.Sin(ViewAngle),
-                        i);
+                        i
+                        );
                     V_Y_temp
                         .Set_Angle012(Dist_Cos_ViewAngle +
                         V_FOV_temp.Angle_0[i] * Math.Sin(ViewAngle),
@@ -340,32 +329,8 @@ namespace surveillance_system
                         V_FOV_temp.Angle_1[i] * Math.Sin(ViewAngle),
                         Dist_Cos_ViewAngle +
                         V_FOV_temp.Angle_2[i] * Math.Sin(ViewAngle),
-                        i);
-
-                    // 기존
-                    V_FOV_0[i] = 0;
-                    V_FOV_1[i] = (1 / 2) * Dist[i] * WD / Focal_Length;
-                    V_FOV_2[i] = (-1 / 2) * Dist[i] * WD / Focal_Length;
-
-                    V_X0[i] =
-                        Dist[i] * Math.Cos(ViewAngle) -
-                        V_FOV_0[i] * Math.Sin(ViewAngle);
-                    V_X1[i] =
-                        Dist[i] * Math.Cos(ViewAngle) -
-                        V_FOV_1[i] * Math.Sin(ViewAngle);
-                    V_X2[i] =
-                        Dist[i] * Math.Cos(ViewAngle) -
-                        V_FOV_2[i] * Math.Sin(ViewAngle);
-
-                    V_Y0[i] =
-                        Dist[i] * Math.Sin(ViewAngle) +
-                        V_FOV_0[i] * Math.Cos(ViewAngle);
-                    V_Y1[i] =
-                        Dist[i] * Math.Sin(ViewAngle) +
-                        V_FOV_1[i] * Math.Cos(ViewAngle);
-                    V_Y2[i] =
-                        Dist[i] * Math.Sin(ViewAngle) +
-                        V_FOV_2[i] * Math.Cos(ViewAngle);
+                        i
+                        );
                 }
 
                 // 211126_2
@@ -373,45 +338,34 @@ namespace surveillance_system
                 Angle3D V_FOV_Y_temp = new Angle3D(Dist.Length);
                 Angle3D V_FOV_Z_temp = new Angle3D(Dist.Length);
 
-                // 기존
-                double[,] V_FOV_X = new double[3, Dist.Length];
-                double[,] V_FOV_Y = new double[3, Dist.Length];
-
                 for (int i = 0; i < Dist.Length; i++)
                 {
+                    // 211126_2
                     // V_FOV는 Y+Z ?
-                    V_FOV_X[0, i] = V_X_temp.Angle_0[i] + X;
-                    V_FOV_X[1, i] = V_X_temp.Angle_1[i] + X;
-                    V_FOV_X[2, i] = V_X_temp.Angle_2[i] + X;
-                    V_FOV_Y[0, i] = V_Y_temp.Angle_0[i] + Z;
-                    V_FOV_Y[1, i] = V_Y_temp.Angle_1[i] + Z;
-                    V_FOV_Y[2, i] = V_Y_temp.Angle_2[i] + Z;
-
-                    V_FOV_X_temp = V_X_temp.Angle_0[i] + X;
-                    V_FOV_X[1, i] = V_X_temp.Angle_1[i] + X;
-                    V_FOV_X[2, i] = V_X_temp.Angle_2[i] + X;
-                    V_FOV_Y[0, i] = V_Y_temp.Angle_0[i] + Z;
-                    V_FOV_Y[1, i] = V_Y_temp.Angle_1[i] + Z;
-                    V_FOV_Y[2, i] = V_Y_temp.Angle_2[i] + Z;
+                    V_FOV_X_temp.Set_Angle012(V_X_temp.Angle_0[i] + X,
+                                              V_X_temp.Angle_1[i] + X,
+                                              V_X_temp.Angle_2[i] + X,
+                                              i);
+                    V_FOV_Y_temp.Set_Angle012(V_Y_temp.Angle_0[i] + Z,
+                                              V_Y_temp.Angle_1[i] + Z,
+                                              V_Y_temp.Angle_2[i] + Z,
+                                              i);
                 }
-
                 // 211126
                 V_FOV.Init_X012(Dist.Length);
                 V_FOV.Init_Y012(Dist.Length);
 
                 for (int i = 0; i < Dist.Length; i++)
                 {
-                    // 211126
-                    V_FOV
-                        .Set_X012(V_FOV_X[0, i],
-                        V_FOV_X[1, i],
-                        V_FOV_X[2, i],
-                        i);
-                    V_FOV
-                        .Set_Y012(V_FOV_Y[0, i],
-                        V_FOV_Y[1, i],
-                        V_FOV_Y[2, i],
-                        i);
+                    // 211126_2
+                    V_FOV.Set_X012(V_FOV_X_temp.Angle_0[i], 
+                                   V_FOV_X_temp.Angle_1[i], 
+                                   V_FOV_X_temp.Angle_2[i], 
+                                   i);
+                    V_FOV.Set_Y012(V_FOV_Y_temp.Angle_0[i], 
+                                   V_FOV_Y_temp.Angle_1[i], 
+                                   V_FOV_Y_temp.Angle_2[i], 
+                                   i);                    
                 }
             }
 
