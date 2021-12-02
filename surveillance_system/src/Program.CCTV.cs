@@ -271,6 +271,8 @@ namespace surveillance_system
                     H_FOV_Y[2, i] = H_Y2[i] + Y;
                 }
 
+                H_FOV = new FOV();
+
                 // 211126
                 // 아래 두 줄로 6줄 치환 가능
                 H_FOV.Init_X012(Dist.Length);
@@ -351,6 +353,8 @@ namespace surveillance_system
                                               V_Y_temp.Angle_2[i] + Z,
                                               i);
                 }
+
+                V_FOV = new FOV();
                 // 211126
                 V_FOV.Init_X012(Dist.Length);
                 V_FOV.Init_Y012(Dist.Length);

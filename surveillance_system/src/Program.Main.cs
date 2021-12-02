@@ -129,7 +129,7 @@ namespace surveillance_system
 
                     Console.WriteLine("\n============================================================\n");
                     Console.WriteLine("{0}번째 보행자 -  {1}번째 목적지(좌표: {2}, {3}) ",
-                        Array.IndexOf(peds, ped), idx_minDist, dst_x, dst_y);
+                        Array.IndexOf(peds, ped)+1, idx_minDist, dst_x, dst_y);
 
                     // 보행자~목적지 벡터
                     double[] A = new double[2];
@@ -182,10 +182,7 @@ namespace surveillance_system
                     = get_PixelDensity(Dist, CCTV(i).WD, CCTV(i).HE, CCTV(i).Focal_Length, CCTV(i).imW, CCTV(i).imH);
                     Eff_Dist_Range = CCTV(i).R_blind:CCTV(i).R_eff;
                     */
-                    /* =================================
-                     *  추가 line 460 (깃허브 127~128)
-                     *  밑에 라인 495~544에서 필요한 변수를 여기서 처리해서 일단 얘는 옮겨놨습니다!
-                     * =================================*/
+
                     cctvs[i]
                         .get_PixelDensity(Dist,
                         cctvs[i].WD,
@@ -193,6 +190,12 @@ namespace surveillance_system
                         cctvs[i].Focal_Length,
                         cctvs[i].imW,
                         cctvs[i].imH);
+
+                    foreach(CCTV cctv in cctvs)
+                    {
+                        cctv.get_V_FOV(Dist, cctv.HE, cctv.Focal_Length, cctv.ViewAngleV,cctv.X,cctv.Y);
+                        cctv.get_H_FOV(Dist, cctv.WD, cctv.Focal_Length, cctv.ViewAngleH, cctv.X, cctv.Y);
+                    }
 
                     /*
                     [FOV_X2, FOV_Y2] = get_V_FOV(Dist, CCTV(i).HE, CCTV(i).Focal_Length, CCTV(i).ViewAngleV, CCTV(i).X, CCTV(i).Z);
@@ -213,7 +216,7 @@ namespace surveillance_system
                     CCTV(i).H_FOV_Y2(1,:) = FOV_Y(3,:);
                   */
 
-                    cctvs[i].printCCTVInfo();
+                    //cctvs[i].printCCTVInfo();
                 }
             }
 
@@ -313,7 +316,6 @@ namespace surveillance_system
 
                     foreach (double survdist_h in cctvs[i].SurvDist_H)
                     {
-                        Console.WriteLine("survdist_h = {0} ", survdist_h);
                         if (dist_h1 <=survdist_h  && dist_h2 <= survdist_h)
                         {
                             candidate_detected_ped_h[i, j] = 1;                        
@@ -387,19 +389,29 @@ namespace surveillance_system
                 }     
             }
 
+            Console.WriteLine("\n====== RESULT =======================================\n");
+            int[] cnt = new int[N_Ped];
+
+            Console.WriteLine("=== 성공 ====");
             // detection 결과 출력
-            for(int i = 0; i < N_CCTV; i++)
+            for (int i = 0; i < N_CCTV; i++)
             {
                 for (int j = 0; j < N_Ped; j++)
                 {
                     if (detected_map[i, j] == 1)
                     {
-                        Console.WriteLine("{0}번째 CCTV가 {1}번째 보행자를 감지", i, j);
+                        Console.WriteLine("{0}번째 CCTV가 {1}번째 보행자를 감지", i+1, j+1);
+                        cnt[j]++;
                     }
-                    else
-                    {
-                        Console.WriteLine("실패");
-                    }
+                }
+            }
+
+            Console.WriteLine("\n\n=== 실패 ====");
+            for (int i = 0; i < N_Ped; i++)
+            {
+                if (cnt[i] == 0)
+                {
+                    Console.WriteLine("{0}번째 보행자 추적 실패 ",i+1);
                 }
             }
             
