@@ -218,6 +218,7 @@ namespace surveillance_system
             }
 
             // 추가 % Initialize 8 maps (깃허브 line 158~)
+            /*
             double[,] Dist_MAP_H1 = new double[N_CCTV, N_Ped];
             double[,] Dist_MAP_H2 = new double[N_CCTV, N_Ped];
             double[,] Dist_MAP_V1 = new double[N_CCTV, N_Ped];
@@ -286,6 +287,49 @@ namespace surveillance_system
                     }
                 }
             }
+            */
+
+
+            // 거리 검사
+            int[,] candidate_detected_ped_h = new int[N_CCTV, N_Ped];
+            int[,] candidate_detected_ped_v = new int[N_CCTV, N_Ped];
+
+            for(int i = 0; i < N_CCTV; i++)
+            {
+                for(int j = 0; j < N_Ped; j++)
+                {
+                    double dist_h1 = Math
+                            .Sqrt(Math.Pow(cctvs[i].X - peds[j].Pos_H1[0], 2) +
+                            Math.Pow(cctvs[i].Y - peds[j].Pos_H1[1], 2));
+                    double dist_h2 = Math
+                            .Sqrt(Math.Pow(cctvs[i].X - peds[j].Pos_H2[0], 2) +
+                            Math.Pow(cctvs[i].Y - peds[j].Pos_H2[1], 2));
+                    double dist_v1 = Math
+                            .Sqrt(Math.Pow(cctvs[i].X - peds[j].Pos_V1[0], 2) +
+                            Math.Pow(cctvs[i].Y - peds[j].Pos_V1[1], 2));
+                    double dist_v2 = Math
+                            .Sqrt(Math.Pow(cctvs[i].X - peds[j].Pos_V2[0], 2) +
+                            Math.Pow(cctvs[i].Y - peds[j].Pos_V2[1], 2));
+
+                    foreach(double survdist_h in cctvs[i].SurvDist_H)
+                    {
+                        if (dist_h1 <=survdist_h  && dist_h2 <= survdist_h)
+                        {
+                            candidate_detected_ped_h[i, j] = 1;
+                        }
+                    }
+
+                    foreach (double survdist_v in cctvs[i].SurvDist_V)
+                    {
+                        if (dist_h1 <= survdist_v && dist_h2 <= survdist_v)
+                        {
+                            candidate_detected_ped_v[i, j] = 1;
+                        }
+                    }
+                }
+            }
+            
+
         }
     }
 }
