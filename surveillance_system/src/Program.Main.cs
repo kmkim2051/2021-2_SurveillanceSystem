@@ -328,6 +328,62 @@ namespace surveillance_system
                     }
                 }
             }
+
+            int[,] detected_map = new int[N_CCTV, N_Ped];
+
+            // 각도 검사 
+            for(int i = 0; i < N_CCTV; i++)
+            {
+                double cosine_H_AOV = Math.Cos(cctvs[i].H_AOV / 2);
+                double cosine_V_AOV = Math.Cos(cctvs[i].V_AOV / 2);
+
+                for(int j = 0; j < N_Ped; j++)
+                {
+                    int h_detected= 0;
+                    int v_detected = 0;
+                    // 거리가 범위 내이면
+                    if (candidate_detected_ped_h[i, j] == 1)
+                    {
+                        int len = cctvs[i].H_FOV.X0.GetLength(0);
+                        double[] A = { cctvs[i].H_FOV.X0[len - 1] - cctvs[i].X, cctvs[i].H_FOV.Y0[len - 1] - cctvs[i].Y };
+                        double[] B = { peds[j].Pos_H1[0] - cctvs[i].X, peds[j].Pos_H1[1] - cctvs[i].Y };
+                        double cosine_PED_h1 = InnerProduct(A, B) / (Norm(A) * Norm(B));
+
+                        B[0] = peds[j].Pos_H2[0] - cctvs[i].X;
+                        B[1]= peds[j].Pos_H2[1] - cctvs[i].Y ;
+                        double cosine_PED_h2 = InnerProduct(A, B) / (Norm(A) * Norm(B));
+
+                        if (cosine_PED_h1 < cosine_H_AOV && cosine_PED_h2<cosine_H_AOV)
+                        {
+                            //감지 됨
+                            h_detected = 1;
+                        }
+                    }
+
+                    if(candidate_detected_ped_v[i, j] == 1)
+                    {
+                        int len = cctvs[i].V_FOV.X0.GetLength(0);
+                        double[] A = { cctvs[i].V_FOV.X0[len - 1] - cctvs[i].X, cctvs[i].V_FOV.Y0[len - 1] - cctvs[i].Y };
+                        double[] B = { peds[j].Pos_V1[0] - cctvs[i].X, peds[j].Pos_V1[1] - cctvs[i].Y };
+                        double cosine_PED_v1 = InnerProduct(A, B) / (Norm(A) * Norm(B));
+
+                        B[0] = peds[j].Pos_V2[0] - cctvs[i].X;
+                        B[1] = peds[j].Pos_V2[1] - cctvs[i].Y;
+                        double cosine_PED_v2 = InnerProduct(A, B) / (Norm(A) * Norm(B));
+
+                        if (cosine_PED_v1 < cosine_V_AOV && cosine_PED_v2 < cosine_V_AOV)
+                        {
+                            //감지 됨
+                            v_detected = 1;
+                        }
+                    }
+
+                    if (h_detected==1 && v_detected == 1)
+                    {
+                        detected_map[i, j] = 1;
+                    }
+                }     
+            }
             
 
         }
