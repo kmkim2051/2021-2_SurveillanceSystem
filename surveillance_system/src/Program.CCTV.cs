@@ -396,7 +396,7 @@ namespace surveillance_system
 
                 for (int i = 0; i < len; i++)
                 {
-                    Dist_Meter[i] = dist[i] * 0.003;
+                    Dist_Meter[i] = dist[i] * 0.001;
                 }
 
                 for (int i = 0; i < len; i++)

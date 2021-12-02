@@ -300,28 +300,29 @@ namespace surveillance_system
                 {
                     double dist_h1 = Math
                             .Sqrt(Math.Pow(cctvs[i].X - peds[j].Pos_H1[0], 2) +
-                            Math.Pow(cctvs[i].Y - peds[j].Pos_H1[1], 2));
+                            Math.Pow(cctvs[i].Y - peds[j].Pos_H1[1], 2))*0.000001;
                     double dist_h2 = Math
                             .Sqrt(Math.Pow(cctvs[i].X - peds[j].Pos_H2[0], 2) +
-                            Math.Pow(cctvs[i].Y - peds[j].Pos_H2[1], 2));
+                            Math.Pow(cctvs[i].Y - peds[j].Pos_H2[1], 2)) * 0.000001;
                     double dist_v1 = Math
                             .Sqrt(Math.Pow(cctvs[i].X - peds[j].Pos_V1[0], 2) +
-                            Math.Pow(cctvs[i].Y - peds[j].Pos_V1[1], 2));
+                            Math.Pow(cctvs[i].Y - peds[j].Pos_V1[1], 2)) * 0.000001;
                     double dist_v2 = Math
                             .Sqrt(Math.Pow(cctvs[i].X - peds[j].Pos_V2[0], 2) +
-                            Math.Pow(cctvs[i].Y - peds[j].Pos_V2[1], 2));
+                            Math.Pow(cctvs[i].Y - peds[j].Pos_V2[1], 2)) * 0.000001;
 
-                    foreach(double survdist_h in cctvs[i].SurvDist_H)
+                    foreach (double survdist_h in cctvs[i].SurvDist_H)
                     {
+                        Console.WriteLine("survdist_h = {0} ", survdist_h);
                         if (dist_h1 <=survdist_h  && dist_h2 <= survdist_h)
                         {
-                            candidate_detected_ped_h[i, j] = 1;
+                            candidate_detected_ped_h[i, j] = 1;                        
                         }
                     }
 
                     foreach (double survdist_v in cctvs[i].SurvDist_V)
                     {
-                        if (dist_h1 <= survdist_v && dist_h2 <= survdist_v)
+                        if (dist_v1 <= survdist_v && dist_v2 <= survdist_v)
                         {
                             candidate_detected_ped_v[i, j] = 1;
                         }
@@ -336,6 +337,7 @@ namespace surveillance_system
             {
                 double cosine_H_AOV = Math.Cos(cctvs[i].H_AOV / 2);
                 double cosine_V_AOV = Math.Cos(cctvs[i].V_AOV / 2);
+
 
                 for(int j = 0; j < N_Ped; j++)
                 {
@@ -383,6 +385,22 @@ namespace surveillance_system
                         detected_map[i, j] = 1;
                     }
                 }     
+            }
+
+            // detection 결과 출력
+            for(int i = 0; i < N_CCTV; i++)
+            {
+                for (int j = 0; j < N_Ped; j++)
+                {
+                    if (detected_map[i, j] == 1)
+                    {
+                        Console.WriteLine("{0}번째 CCTV가 {1}번째 보행자를 감지", i, j);
+                    }
+                    else
+                    {
+                        Console.WriteLine("실패");
+                    }
+                }
             }
             
 
