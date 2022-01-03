@@ -9,6 +9,134 @@ namespace surveillance_system
         public static CCTV[] cctvs;
         public static Pedestrian[] peds;
 
+        /* --------------------------------------
+         * 추적 여부 검사 함수
+        -------------------------------------- */
+        static void checkDetection(int N_CCTV, int N_Ped)
+        {
+            // 거리 검사
+            int[,] candidate_detected_ped_h = new int[N_CCTV, N_Ped];
+            int[,] candidate_detected_ped_v = new int[N_CCTV, N_Ped];
+
+            for (int i = 0; i < N_CCTV; i++)
+            {
+                for (int j = 0; j < N_Ped; j++)
+                {
+                    double dist_h1 = Math
+                            .Sqrt(Math.Pow(cctvs[i].X - peds[j].Pos_H1[0], 2) +
+                            Math.Pow(cctvs[i].Y - peds[j].Pos_H1[1], 2)) * 0.000001;
+                    double dist_h2 = Math
+                            .Sqrt(Math.Pow(cctvs[i].X - peds[j].Pos_H2[0], 2) +
+                            Math.Pow(cctvs[i].Y - peds[j].Pos_H2[1], 2)) * 0.000001;
+                    double dist_v1 = Math
+                            .Sqrt(Math.Pow(cctvs[i].X - peds[j].Pos_V1[0], 2) +
+                            Math.Pow(cctvs[i].Y - peds[j].Pos_V1[1], 2)) * 0.000001;
+                    double dist_v2 = Math
+                            .Sqrt(Math.Pow(cctvs[i].X - peds[j].Pos_V2[0], 2) +
+                            Math.Pow(cctvs[i].Y - peds[j].Pos_V2[1], 2)) * 0.000001;
+
+                    foreach (double survdist_h in cctvs[i].SurvDist_H)
+                    {
+                        if (dist_h1 <= survdist_h && dist_h2 <= survdist_h)
+                        {
+                            candidate_detected_ped_h[i, j] = 1;
+                        }
+                    }
+
+                    foreach (double survdist_v in cctvs[i].SurvDist_V)
+                    {
+                        if (dist_v1 <= survdist_v && dist_v2 <= survdist_v)
+                        {
+                            candidate_detected_ped_v[i, j] = 1;
+                        }
+                    }
+                }
+            }
+
+            int[,] detected_map = new int[N_CCTV, N_Ped];
+
+            // 각도 검사 
+            for (int i = 0; i < N_CCTV; i++)
+            {
+                double cosine_H_AOV = Math.Cos(cctvs[i].H_AOV / 2);
+                double cosine_V_AOV = Math.Cos(cctvs[i].V_AOV / 2);
+
+
+                for (int j = 0; j < N_Ped; j++)
+                {
+                    int h_detected = 0;
+                    int v_detected = 0;
+                    // 거리가 범위 내이면
+                    if (candidate_detected_ped_h[i, j] == 1)
+                    {
+                        int len = cctvs[i].H_FOV.X0.GetLength(0);
+                        double[] A = { cctvs[i].H_FOV.X0[len - 1] - cctvs[i].X, cctvs[i].H_FOV.Y0[len - 1] - cctvs[i].Y };
+                        double[] B = { peds[j].Pos_H1[0] - cctvs[i].X, peds[j].Pos_H1[1] - cctvs[i].Y };
+                        double cosine_PED_h1 = InnerProduct(A, B) / (Norm(A) * Norm(B));
+
+                        B[0] = peds[j].Pos_H2[0] - cctvs[i].X;
+                        B[1] = peds[j].Pos_H2[1] - cctvs[i].Y;
+                        double cosine_PED_h2 = InnerProduct(A, B) / (Norm(A) * Norm(B));
+
+                        if (cosine_PED_h1 < cosine_H_AOV && cosine_PED_h2 < cosine_H_AOV)
+                        {
+                            //감지 됨
+                            h_detected = 1;
+                        }
+                    }
+
+                    if (candidate_detected_ped_v[i, j] == 1)
+                    {
+                        int len = cctvs[i].V_FOV.X0.GetLength(0);
+                        double[] A = { cctvs[i].V_FOV.X0[len - 1] - cctvs[i].X, cctvs[i].V_FOV.Y0[len - 1] - cctvs[i].Y };
+                        double[] B = { peds[j].Pos_V1[0] - cctvs[i].X, peds[j].Pos_V1[1] - cctvs[i].Y };
+                        double cosine_PED_v1 = InnerProduct(A, B) / (Norm(A) * Norm(B));
+
+                        B[0] = peds[j].Pos_V2[0] - cctvs[i].X;
+                        B[1] = peds[j].Pos_V2[1] - cctvs[i].Y;
+                        double cosine_PED_v2 = InnerProduct(A, B) / (Norm(A) * Norm(B));
+
+                        if (cosine_PED_v1 < cosine_V_AOV && cosine_PED_v2 < cosine_V_AOV)
+                        {
+                            //감지 됨
+                            v_detected = 1;
+                        }
+                    }
+
+                    if (h_detected == 1 && v_detected == 1)
+                    {
+                        detected_map[i, j] = 1;
+                    }
+                }
+            }
+
+            Console.WriteLine("\n====== RESULT =======================================\n");
+            int[] cnt = new int[N_Ped];
+
+            Console.WriteLine("=== 성공 ====");
+            // detection 결과 출력
+            for (int i = 0; i < N_CCTV; i++)
+            {
+                for (int j = 0; j < N_Ped; j++)
+                {
+                    if (detected_map[i, j] == 1)
+                    {
+                        Console.WriteLine("{0}번째 CCTV가 {1}번째 보행자를 감지", i + 1, j + 1);
+                        cnt[j]++;
+                    }
+                }
+            }
+
+            Console.WriteLine("\n\n=== 실패 ====");
+            for (int i = 0; i < N_Ped; i++)
+            {
+                if (cnt[i] == 0)
+                {
+                    Console.WriteLine("{0}번째 보행자 추적 실패 ", i + 1);
+                }
+            }
+        }
+
         static void Main(string[] args)
         {
             Road road = new Road();
@@ -101,9 +229,13 @@ namespace surveillance_system
                 peds[i] = new Pedestrian();
             }
 
+
+            /* -------------------------------------------
+             *  도로 정보 생성 + 보행자 초기화 시작
+            ------------------------------------------- */
             if (On_Road_Builder)
             {
-                road.roadBuilder(Road_Width, Road_Interval, Road_N_Interval, N_CCTV, N_Ped);
+                road.roadBuilder(Road_Width, Road_Interval, Road_N_Interval, N_CCTV, N_Ped); // 도로 정보 생성
                 road.printRoadInfo();
 
                 for (int i = 0; i < N_Ped; i++)
@@ -219,6 +351,9 @@ namespace surveillance_system
                     //cctvs[i].printCCTVInfo();
                 }
             }
+            /* -------------------------------------------
+            *  도로 정보 생성 + 보행자 초기화 끝
+            ------------------------------------------- */
 
             // 추가 % Initialize 8 maps (깃허브 line 158~)
             /*
@@ -293,128 +428,7 @@ namespace surveillance_system
             */
 
 
-            // 거리 검사
-            int[,] candidate_detected_ped_h = new int[N_CCTV, N_Ped];
-            int[,] candidate_detected_ped_v = new int[N_CCTV, N_Ped];
-
-            for(int i = 0; i < N_CCTV; i++)
-            {
-                for(int j = 0; j < N_Ped; j++)
-                {
-                    double dist_h1 = Math
-                            .Sqrt(Math.Pow(cctvs[i].X - peds[j].Pos_H1[0], 2) +
-                            Math.Pow(cctvs[i].Y - peds[j].Pos_H1[1], 2))*0.000001;
-                    double dist_h2 = Math
-                            .Sqrt(Math.Pow(cctvs[i].X - peds[j].Pos_H2[0], 2) +
-                            Math.Pow(cctvs[i].Y - peds[j].Pos_H2[1], 2)) * 0.000001;
-                    double dist_v1 = Math
-                            .Sqrt(Math.Pow(cctvs[i].X - peds[j].Pos_V1[0], 2) +
-                            Math.Pow(cctvs[i].Y - peds[j].Pos_V1[1], 2)) * 0.000001;
-                    double dist_v2 = Math
-                            .Sqrt(Math.Pow(cctvs[i].X - peds[j].Pos_V2[0], 2) +
-                            Math.Pow(cctvs[i].Y - peds[j].Pos_V2[1], 2)) * 0.000001;
-
-                    foreach (double survdist_h in cctvs[i].SurvDist_H)
-                    {
-                        if (dist_h1 <=survdist_h  && dist_h2 <= survdist_h)
-                        {
-                            candidate_detected_ped_h[i, j] = 1;                        
-                        }
-                    }
-
-                    foreach (double survdist_v in cctvs[i].SurvDist_V)
-                    {
-                        if (dist_v1 <= survdist_v && dist_v2 <= survdist_v)
-                        {
-                            candidate_detected_ped_v[i, j] = 1;
-                        }
-                    }
-                }
-            }
-
-            int[,] detected_map = new int[N_CCTV, N_Ped];
-
-            // 각도 검사 
-            for(int i = 0; i < N_CCTV; i++)
-            {
-                double cosine_H_AOV = Math.Cos(cctvs[i].H_AOV / 2);
-                double cosine_V_AOV = Math.Cos(cctvs[i].V_AOV / 2);
-
-
-                for(int j = 0; j < N_Ped; j++)
-                {
-                    int h_detected= 0;
-                    int v_detected = 0;
-                    // 거리가 범위 내이면
-                    if (candidate_detected_ped_h[i, j] == 1)
-                    {
-                        int len = cctvs[i].H_FOV.X0.GetLength(0);
-                        double[] A = { cctvs[i].H_FOV.X0[len - 1] - cctvs[i].X, cctvs[i].H_FOV.Y0[len - 1] - cctvs[i].Y };
-                        double[] B = { peds[j].Pos_H1[0] - cctvs[i].X, peds[j].Pos_H1[1] - cctvs[i].Y };
-                        double cosine_PED_h1 = InnerProduct(A, B) / (Norm(A) * Norm(B));
-
-                        B[0] = peds[j].Pos_H2[0] - cctvs[i].X;
-                        B[1]= peds[j].Pos_H2[1] - cctvs[i].Y ;
-                        double cosine_PED_h2 = InnerProduct(A, B) / (Norm(A) * Norm(B));
-
-                        if (cosine_PED_h1 < cosine_H_AOV && cosine_PED_h2<cosine_H_AOV)
-                        {
-                            //감지 됨
-                            h_detected = 1;
-                        }
-                    }
-
-                    if(candidate_detected_ped_v[i, j] == 1)
-                    {
-                        int len = cctvs[i].V_FOV.X0.GetLength(0);
-                        double[] A = { cctvs[i].V_FOV.X0[len - 1] - cctvs[i].X, cctvs[i].V_FOV.Y0[len - 1] - cctvs[i].Y };
-                        double[] B = { peds[j].Pos_V1[0] - cctvs[i].X, peds[j].Pos_V1[1] - cctvs[i].Y };
-                        double cosine_PED_v1 = InnerProduct(A, B) / (Norm(A) * Norm(B));
-
-                        B[0] = peds[j].Pos_V2[0] - cctvs[i].X;
-                        B[1] = peds[j].Pos_V2[1] - cctvs[i].Y;
-                        double cosine_PED_v2 = InnerProduct(A, B) / (Norm(A) * Norm(B));
-
-                        if (cosine_PED_v1 < cosine_V_AOV && cosine_PED_v2 < cosine_V_AOV)
-                        {
-                            //감지 됨
-                            v_detected = 1;
-                        }
-                    }
-
-                    if (h_detected==1 && v_detected == 1)
-                    {
-                        detected_map[i, j] = 1;
-                    }
-                }     
-            }
-
-            Console.WriteLine("\n====== RESULT =======================================\n");
-            int[] cnt = new int[N_Ped];
-
-            Console.WriteLine("=== 성공 ====");
-            // detection 결과 출력
-            for (int i = 0; i < N_CCTV; i++)
-            {
-                for (int j = 0; j < N_Ped; j++)
-                {
-                    if (detected_map[i, j] == 1)
-                    {
-                        Console.WriteLine("{0}번째 CCTV가 {1}번째 보행자를 감지", i+1, j+1);
-                        cnt[j]++;
-                    }
-                }
-            }
-
-            Console.WriteLine("\n\n=== 실패 ====");
-            for (int i = 0; i < N_Ped; i++)
-            {
-                if (cnt[i] == 0)
-                {
-                    Console.WriteLine("{0}번째 보행자 추적 실패 ",i+1);
-                }
-            }
-            
+            checkDetection(N_CCTV,N_Ped);
 
         }
     }
