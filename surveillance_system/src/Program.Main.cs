@@ -78,7 +78,7 @@ namespace surveillance_system
             // CCTV 50 = 15초
             // CCTV 75 = 30초
             // CCTV 100 =  55초
-            const int N_CCTV = 6;
+            const int N_CCTV = 60;
             double[] Dist = new double[10000];
             double[] Height = new double[10000];
             for (int i = 0; i < 10000; i++)
@@ -88,8 +88,8 @@ namespace surveillance_system
             }
 
             // Configuration: Pedestrian (Target Object)
-            const int N_Ped = 5;
-            // const int N_Ped = 100;
+            const int N_Ped = 1000;
+            // const int N_Ped = 5;
             const int Ped_Width = 900; // (mm)
             const int Ped_Height = 1700; // (mm)
             const int Ped_Velocity = 1500; // (mm/s)
@@ -125,7 +125,7 @@ namespace surveillance_system
                     Console.WriteLine("{0}번째 cctv = ({1}, {2}) ", i + 1, cctvs[i].X, cctvs[i].Y);
                 }
 
-                //ped
+                //ped init
                 foreach(Pedestrian ped in peds)
                 {
                     double minDist = 0.0;
@@ -155,7 +155,7 @@ namespace surveillance_system
 
                 Console.WriteLine("\n============================================================\n\n\n");
 
-                // cctv 
+                // cctv init
                 for (int i = 0; i < N_CCTV; i++)
                 {
                     cctvs[i].Z =
@@ -165,8 +165,13 @@ namespace surveillance_system
                     cctvs[i].imW = (int)imW;
                     cctvs[i].imH = (int)imH;
                     cctvs[i].Focal_Length = Lens_FocalLength;
+                    // 220104 초기 각도 설정
                     cctvs[i].ViewAngleH = rand.NextDouble() * 360;
                     cctvs[i].ViewAngleV = -35 - 20 * rand.NextDouble();
+                    
+                    cctvs[i].isFixed = true; // default
+                    cctvs[i].setViewAngle(rand.NextDouble() * 360, -35 - 20 * rand.NextDouble());
+
                     cctvs[i].H_AOV = 2 * Math.Atan(WD / (2 * Lens_FocalLength));
                     cctvs[i].V_AOV = 2 * Math.Atan(WD / (2 * Lens_FocalLength));
 
@@ -309,6 +314,12 @@ namespace surveillance_system
             // 거리 검사
             int[,] candidate_detected_ped_h = new int[N_CCTV, N_Ped];
             int[,] candidate_detected_ped_v = new int[N_CCTV, N_Ped];
+
+            // 일정 주기마다 90도 회전(시간 변화는 추후 구현)
+            foreach(CCTV cctv in cctvs) {
+              if(!cctv.isFixed) cctv.rotate_H(90);
+            }
+
 
             for(int i = 0; i < N_CCTV; i++)
             {
@@ -478,10 +489,11 @@ namespace surveillance_system
             // 
             Console.WriteLine("\n\n=== 결과 분석 ====");
             // cctv가 보행자를 탐지하는 상황에서
-            // 각 CCTV 관점에서 h, v 중 어떤 이유로 탐지를 못했나를 알기 위함
+            // 각 CCTV 관점에서 h, v 중 
+            // 어떤 이유로 탐지를 못했나를 알기 위함
             // 탐지 실패 사유를 생각할때 
             // cctv 관점(배치 조절에 도움) 이랑
-            // 보행자 관점(개개인 치안?)이 중요한가?
+            // 보행자 관점(개개인 치안?)이 어느쪽이 더 중요한가?
             double total_detecting_probability = 0.0;
             double total_missing_probability = 0.0;
 

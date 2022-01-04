@@ -200,11 +200,33 @@ namespace surveillance_system
 
             public double Direction;
 
+            public bool isFixed = false;
+
             // new FOV class member
 
             public FOV H_FOV;
 
             public FOV V_FOV;
+
+            public void setViewAngleH(double angleH)
+            {
+                ViewAngleH = angleH;
+            }
+            public void setViewAngleV(double angleH)
+            {
+                ViewAngleH = angleH;
+            }
+            public void setViewAngle(double angleH, double angleV)
+            {
+              setViewAngleH(angleH);
+              setViewAngleV(angleV);
+            }
+            public void rotate_H(double angle=90)
+            {
+              // 기본 90도 horizontal rotate
+              if(isFixed) return;
+              setViewAngleH((ViewAngleH + angle) % 360);
+            }
 
             public void get_H_FOV(
                 double[] Dist,
@@ -272,9 +294,6 @@ namespace surveillance_system
                 }
 
                 H_FOV = new FOV();
-
-                // 211126
-                // 아래 두 줄로 6줄 치환 가능
                 H_FOV.Init_X012(Dist.Length);
                 H_FOV.Init_Y012(Dist.Length);
 
