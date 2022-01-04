@@ -10,7 +10,7 @@ namespace surveillance_system
         public static Pedestrian[] peds;
 
         // Configuration: simulation time
-        const double aUnitTime = 100 * 0.001;
+        const double aUnitTime = 100 * 0.001; // (sec)
 
         /* --------------------------------------
          * 추적 여부 검사 함수
@@ -139,6 +139,8 @@ namespace surveillance_system
             }
         }
 
+        
+        
         static void Main(string[] args)
         {
             Road road = new Road();
@@ -270,8 +272,12 @@ namespace surveillance_system
                     A[0] = dst_x - ped.X;
                     A[1] = dst_y - ped.Y;
 
-                    double[] B = { 0.001, 0.001 };
+                    double[] B = { 0.001, 0 };
                     double direction = Math.Round(Math.Acos(InnerProduct(A, B) / (Norm(A) * Norm(B))),2);
+                    if(ped.Y > dst_y)
+                    {
+                        direction = 2 * Math.PI - direction; 
+                    }
                     ped.define_PED(Ped_Width, Ped_Height, direction, dst_x, dst_y, Ped_Velocity);
                     ped.TTL = (int)Math.Ceiling((minDist / ped.Velocity) / aUnitTime);
                     ped.printPedInfo();
@@ -357,13 +363,13 @@ namespace surveillance_system
             *  도로 정보 생성 + 보행자/CCTV 초기화 끝
             ------------------------------------------- */
 
-            double Sim_Time = 0.2;
+            double Sim_Time = 1;
             double Now = 0;
 
-
-            Console.WriteLine(">>> Simulating . . . ");
+            Console.WriteLine(">>> Simulating . . . \n");
             // R_Surv_Time = zeros(N_Ped, 4);
 
+            /*
             while (Now < Sim_Time)
             {
                 // 보행자 이동
@@ -377,11 +383,24 @@ namespace surveillance_system
                 Now += aUnitTime;
 
                 Console.WriteLine("\nRESULT({0})  \n", Now);
-                checkDetection(N_CCTV, N_Ped);
+               checkDetection(N_CCTV, N_Ped);
+            }
+            */
+
+            // test
+            Console.WriteLine("보행자 0의 시작 위치 ({0} , {1}) \n", Math.Round(peds[0].X, 2), Math.Round(peds[0].Y, 2));
+            Console.WriteLine("보행자 0의 목적지 ({0} , {1})  \n\n", Math.Round(peds[0].DST_X, 2), Math.Round(peds[0].DST_Y, 2));
+            Console.WriteLine("보행자 0의 방향: {0}  \n\n", peds[0].Direction);
+            while (Now < Sim_Time)
+            {
+
+                peds[0].move();
+                Console.WriteLine("보행자 0의 현재 위치 ({0} , {1})  ", Math.Round(peds[0].X, 2), Math.Round(peds[0].Y, 2));
+
+                Now += aUnitTime;
             }
 
-           
-
         }
+
     }
 }

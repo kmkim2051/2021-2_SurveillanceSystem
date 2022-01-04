@@ -98,8 +98,12 @@ namespace surveillance_system
 
             public void move()
             {
+                double[] dist = { X - DST_X, Y - DST_Y };
                 // 목적지 도착했는지 검사 
-
+                if (Norm(dist) < 0.1)
+                {
+                    // 목적지, 방향 업데이트 
+                }
 
                 // 이동
                 X += Unit_Travel_Dist * Math.Cos(Direction);
@@ -113,6 +117,7 @@ namespace surveillance_system
                 Console.WriteLine("목적지 : ({0},{1}) \n", this.DST_X, this.DST_Y);
                 Console.WriteLine("방향 각도(라디안) : {0} \n", this.Direction);
                 Console.WriteLine("속도 : {0} \n", this.Velocity);
+                Console.WriteLine("단위이동거리 : {0} \n", this.Unit_Travel_Dist);
                 Console.WriteLine("Pos_H1 : ({0},{1})   Pos_H2 : ({2},{3})  \n", 
                     this.Pos_H1[0], this.Pos_H1[1], this.Pos_H2[0], this.Pos_H2[1]);
                 Console.WriteLine("Pos_V1 : ({0},{1})   Pos_V2 : ({2},{3}) \n",
