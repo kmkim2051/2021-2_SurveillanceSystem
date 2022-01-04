@@ -9,6 +9,9 @@ namespace surveillance_system
         public static CCTV[] cctvs;
         public static Pedestrian[] peds;
 
+        // Configuration: simulation time
+        const double aUnitTime = 100 * 0.001;
+
         /* --------------------------------------
          * 추적 여부 검사 함수
         -------------------------------------- */
@@ -110,7 +113,6 @@ namespace surveillance_system
                 }
             }
 
-            Console.WriteLine("\n====== RESULT =======================================\n");
             int[] cnt = new int[N_Ped];
 
             Console.WriteLine("=== 성공 ====");
@@ -215,8 +217,8 @@ namespace surveillance_system
 
             // D1 = 90
             // D2 = 270
-            // Configuration: simulation time
-            const double aUnitTime = 100 * 0.001;
+           
+            
 
             cctvs = new CCTV[N_CCTV];
             for (int i = 0; i < N_CCTV; i++)
@@ -355,22 +357,26 @@ namespace surveillance_system
             *  도로 정보 생성 + 보행자/CCTV 초기화 끝
             ------------------------------------------- */
 
-            double U_Time = aUnitTime;
-            double Sim_Time = 0.1;
+            double Sim_Time = 0.2;
             double Now = 0;
 
+
+            Console.WriteLine(">>> Simulating . . . ");
             // R_Surv_Time = zeros(N_Ped, 4);
 
             while (Now < Sim_Time)
             {
                 // 보행자 이동
-
+                foreach(Pedestrian ped in peds)
+                {
+                    ped.move();
+                }
 
                 // CCTV 감시 방향 변경
 
+                Now += aUnitTime;
 
-
-                Now += U_Time;
+                Console.WriteLine("\nRESULT({0})  \n", Now);
                 checkDetection(N_CCTV, N_Ped);
             }
 

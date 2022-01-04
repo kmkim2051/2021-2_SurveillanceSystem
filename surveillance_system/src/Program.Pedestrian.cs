@@ -90,8 +90,20 @@ namespace surveillance_system
                 this.DST_Y = DST_Y;
                 this.Velocity = Velocity;
 
+                this.Unit_Travel_Dist = Velocity * aUnitTime;
+
                 // % for performace measure
                 this.N_Surv = 0;
+            }
+
+            public void move()
+            {
+                // 목적지 도착했는지 검사 
+
+
+                // 이동
+                X += Unit_Travel_Dist * Math.Cos(Direction);
+                Y += Unit_Travel_Dist * Math.Sin(Direction);
             }
 
             public void printPedInfo()
