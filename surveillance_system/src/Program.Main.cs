@@ -231,7 +231,7 @@ namespace surveillance_system
 
 
             /* -------------------------------------------
-             *  도로 정보 생성 + 보행자 초기화 시작
+             *  도로 정보 생성 + 보행자/CCTV 초기화 시작
             ------------------------------------------- */
             if (On_Road_Builder)
             {
@@ -352,83 +352,29 @@ namespace surveillance_system
                 }
             }
             /* -------------------------------------------
-            *  도로 정보 생성 + 보행자 초기화 끝
+            *  도로 정보 생성 + 보행자/CCTV 초기화 끝
             ------------------------------------------- */
 
-            // 추가 % Initialize 8 maps (깃허브 line 158~)
-            /*
-            double[,] Dist_MAP_H1 = new double[N_CCTV, N_Ped];
-            double[,] Dist_MAP_H2 = new double[N_CCTV, N_Ped];
-            double[,] Dist_MAP_V1 = new double[N_CCTV, N_Ped];
-            double[,] Dist_MAP_V2 = new double[N_CCTV, N_Ped];
-            double[,] SurvDist_MAP_H1 = new double[N_CCTV, N_Ped];
-            double[,] SurvDist_MAP_H2 = new double[N_CCTV, N_Ped];
-            double[,] SurvDist_MAP_V1 = new double[N_CCTV, N_Ped];
-            double[,] SurvDist_MAP_V2 = new double[N_CCTV, N_Ped];
+            double U_Time = aUnitTime;
+            double Sim_Time = 0.1;
+            double Now = 0;
 
-            //  추가 (깃허브 line 168~207)
-            for (int i = 0; i < N_CCTV; i++)
+            // R_Surv_Time = zeros(N_Ped, 4);
+
+            while (Now < Sim_Time)
             {
-                for (int j = 0; j < N_Ped; j++)
-                {
-                    Dist_MAP_H1[i, j] =
-                        Math
-                            .Sqrt(Math.Pow(cctvs[i].X - peds[j].Pos_H1[0], 2) +
-                            Math.Pow(cctvs[i].Y - peds[j].Pos_H1[1], 2));
-                    Dist_MAP_H2[i, j] =
-                        Math
-                            .Sqrt(Math.Pow(cctvs[i].X - peds[j].Pos_H2[0], 2) +
-                            Math.Pow(cctvs[i].Y - peds[j].Pos_H2[1], 2));
-                    Dist_MAP_V1[i, j] =
-                        Math
-                            .Sqrt(Math.Pow(cctvs[i].X - peds[j].Pos_V1[0], 2) +
-                            Math.Pow(cctvs[i].Y - peds[j].Pos_V1[1], 2));
-                    Dist_MAP_V1[i, j] =
-                        Math
-                            .Sqrt(Math.Pow(cctvs[i].X - peds[j].Pos_V2[0], 2) +
-                            Math.Pow(cctvs[i].Y - peds[j].Pos_V2[1], 2));
+                // 보행자 이동
 
-                    for (int k = 0; k < cctvs[i].SurvDist_H.Length; k++)
-                    {
-                        if (cctvs[i].SurvDist_H[k] >= Dist_MAP_H1[i, j])
-                        {
-                            SurvDist_MAP_H1[i, j] = k;
-                            break;
-                        }
-                    }
 
-                    for (int k = 0; k < cctvs[i].SurvDist_H.Length; k++)
-                    {
-                        if (cctvs[i].SurvDist_H[k] >= Dist_MAP_H2[i, j])
-                        {
-                            SurvDist_MAP_H2[i, j] = k;
-                            break;
-                        }
-                    }
+                // CCTV 감시 방향 변경
 
-                    for (int k = 0; k < cctvs[i].SurvDist_V.Length; k++)
-                    {
-                        if (cctvs[i].SurvDist_V[k] >= Dist_MAP_V1[i, j])
-                        {
-                            SurvDist_MAP_V1[i, j] = k;
-                            break;
-                        }
-                    }
 
-                    for (int k = 0; k < cctvs[i].SurvDist_V.Length; k++)
-                    {
-                        if (cctvs[i].SurvDist_V[k] >= Dist_MAP_V2[i, j])
-                        {
-                            SurvDist_MAP_V2[i, j] = k;
-                            break;
-                        }
-                    }
-                }
+
+                Now += U_Time;
+                checkDetection(N_CCTV, N_Ped);
             }
-            */
 
-
-            checkDetection(N_CCTV,N_Ped);
+           
 
         }
     }
