@@ -218,6 +218,8 @@ namespace surveillance_system
             const int Ped_Height = 1700; // (mm)
             const int Ped_Velocity = 1500; // (mm/s)
 
+            // D1 = 90
+            // D2 = 270
             cctvs = new CCTV[N_CCTV];
             for (int i = 0; i < N_CCTV; i++)
             {
@@ -259,7 +261,7 @@ namespace surveillance_system
                     Calc_Dist_and_get_MinDist(road.DST, ped.X, ped.Y, ref Dist_Map, ref minDist, ref idx_minDist);
                     double dst_x = road.DST[idx_minDist, 0];
                     double dst_y = road.DST[idx_minDist, 1];
-        
+                    
                     Console.WriteLine("\n============================================================\n");
                     Console.WriteLine("{0}번째 보행자 -  {1}번째 목적지(좌표: {2}, {3}) ",
                        Array.IndexOf(peds, ped)+1, idx_minDist, dst_x, dst_y);
@@ -372,7 +374,6 @@ namespace surveillance_system
 
             double Sim_Time = 10;
             double Now = 0;
-
             Console.WriteLine(">>> Simulating . . . \n");
             // R_Surv_Time = zeros(N_Ped, 4);
             
@@ -410,7 +411,6 @@ namespace surveillance_system
                     {
                         traffic_x[i] += Math.Round(peds[i].X, 2) + ",";
                     }
-
                     if (peds[i].Y < -1000 || peds[i].Y > 25000)
                     {
                         traffic_y[i] += "Out of range,";
