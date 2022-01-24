@@ -18,6 +18,9 @@ namespace surveillance_system
         -------------------------------------- */
         static int[] checkDetection(int N_CCTV, int N_Ped)
         {
+
+            int[] returnArr = new int[N_Ped]; // 반환할 탐지 결과 (1: 탐지  0: 거리상 미탐지  -1: 방향 미스)
+
             // 거리 검사
             int[,] candidate_detected_ped_h = new int[N_CCTV, N_Ped];
             int[,] candidate_detected_ped_v = new int[N_CCTV, N_Ped];
@@ -56,6 +59,7 @@ namespace surveillance_system
                     }
                 }
             }
+
             // 각 CCTV의 보행자 탐지횟수 계산
             int[] cctv_detecting_cnt = new int[N_CCTV];
             int[] cctv_missing_cnt = new int[N_CCTV];
@@ -74,8 +78,9 @@ namespace surveillance_system
 
                 for (int j = 0; j < N_Ped; j++)
                 {
-                    int h_detected = 0;
-                    int v_detected = 0;
+                    int h_detected = -1;
+                    int v_detected = -1;
+
                     // 거리가 범위 내이면
                     if (candidate_detected_ped_h[i, j] == 1)
                     {
@@ -92,6 +97,10 @@ namespace surveillance_system
                         {
                             //감지 됨
                             h_detected = 1;
+                        }
+                        else
+                        {
+                            h_detected = 0;
                         }
                     }
 
@@ -111,21 +120,37 @@ namespace surveillance_system
                             //감지 됨
                             v_detected = 1;
                         }
+                        else
+                        {
+                            v_detected = 0;
+                        }
                     }
 
-                    if (h_detected == 1 && v_detected == 1)
+                    
+                    // 거리상 미탐지 
+                    if(h_detected == -1 || v_detected == -1)
+                    {
+                        returnArr[j] = (returnArr[j] == 1 ? 1 : 0);
+                    }
+                    // 탐지 
+                    else if (h_detected == 1 && v_detected == 1)
                     {
                         detected_map[i, j] = 1;
                         // 각 CCTV[i]의 보행자 탐지 횟수 증가
                         cctv_detecting_cnt[i]++;
+
+                        returnArr[j] = 1;
                     }
+                    // 방향 미스 (h or v 중 하나라도 방향이 맞지 않는 경우)
                     else // cctv[i]가 보행자[j]를 h or v 탐지 실패 여부 추가
                     {
-                      cctv_missing_cnt[i]++;
+                        cctv_missing_cnt[i]++;
                       if(h_detected == 0) 
                         missed_map_h[i, j] = 1;
                       if(v_detected == 0) 
                         missed_map_v[i, j] = 1;
+
+                        returnArr[j] = (returnArr[j] == 1 ? 1 : -1);
                     }
                 }
             }
@@ -171,7 +196,7 @@ namespace surveillance_system
                 }
             }
 
-            return detecting_cctv_cnt;
+            return returnArr;
         }
 
         
@@ -387,14 +412,7 @@ namespace surveillance_system
                 int[] res = checkDetection(N_CCTV, N_Ped);
                 for(int i = 0; i < res.Length; i++)
                 {
-                    if (res[i] > 0)
-                    {
-                        detection[i] += "1,";
-                    }
-                    else
-                    {
-                        detection[i] += "0,";
-                    }
+                    detection[i] += Convert.ToString(res[i]) + ",";
                 }
 
                 // 이동
