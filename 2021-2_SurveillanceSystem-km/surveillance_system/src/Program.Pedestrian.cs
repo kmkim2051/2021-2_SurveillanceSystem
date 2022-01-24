@@ -56,6 +56,7 @@ namespace surveillance_system
             public void define_PED(
                 double Width,
                 double Height,
+                double Direction,
                 double DST_X,
                 double DST_Y,
                 double Velocity
@@ -65,6 +66,7 @@ namespace surveillance_system
 
                 this.W = Width;
                 this.H = Height;
+                this.Direction = Direction;
                 this.D1 = 90;
                 this.D2 = 180 + 90 * rand.NextDouble();
                 this.W2 = this.W / 2;
@@ -88,55 +90,8 @@ namespace surveillance_system
                 this.DST_Y = DST_Y;
                 this.Velocity = Velocity;
 
-                this.Unit_Travel_Dist = Velocity * aUnitTime;
-
                 // % for performace measure
                 this.N_Surv = 0;
-            }
-
-            public void move()
-            {               
-                // 이동
-                X += Unit_Travel_Dist * Math.Cos(Direction);
-                Y += Unit_Travel_Dist * Math.Sin(Direction);
-
-                Pos_H1[0] += Unit_Travel_Dist * Math.Cos(Direction);
-                Pos_H1[1] += Unit_Travel_Dist * Math.Sin(Direction);
-
-                Pos_H2[0] += Unit_Travel_Dist * Math.Cos(Direction);
-                Pos_H2[1] += Unit_Travel_Dist * Math.Sin(Direction);
-
-                Pos_V1[0] += Unit_Travel_Dist * Math.Cos(Direction);
-                Pos_V2[0] += Unit_Travel_Dist * Math.Cos(Direction);
-
-                // 목적지 도착 검사
-                double[] dist = { X - DST_X, Y - DST_Y };
-                if (Norm(dist) < 100)
-                {
-                    updateDestination();
-                    setDirection();
-                }
-            }
-
-            public void  updateDestination()
-            {
-                Random rand = new Random();
-                DST_X = rand.Next(0, road.size);
-                DST_Y = rand.Next(0, road.size);
-            }
-
-            public void setDirection()
-            {
-                double[] A = new double[2];
-                A[0] = DST_X - X;
-                A[1] = DST_Y - Y;
-
-                double[] B = { 0.001, 0 };
-                Direction = Math.Round(Math.Acos(InnerProduct(A, B) / (Norm(A) * Norm(B))), 8);
-                if (Y > DST_Y)
-                {
-                    Direction = Math.Round(2 * Math.PI - Direction, 8);
-                }
             }
 
             public void printPedInfo()
@@ -146,12 +101,12 @@ namespace surveillance_system
                 Console.WriteLine("목적지 : ({0},{1}) \n", this.DST_X, this.DST_Y);
                 Console.WriteLine("방향 각도(라디안) : {0} \n", this.Direction);
                 Console.WriteLine("속도 : {0} \n", this.Velocity);
-                Console.WriteLine("단위이동거리 : {0} \n", this.Unit_Travel_Dist);
                 Console.WriteLine("Pos_H1 : ({0},{1})   Pos_H2 : ({2},{3})  \n", 
                     this.Pos_H1[0], this.Pos_H1[1], this.Pos_H2[0], this.Pos_H2[1]);
                 Console.WriteLine("Pos_V1 : ({0},{1})   Pos_V2 : ({2},{3}) \n",
                     this.Pos_V1[0], this.Pos_V1[1], this.Pos_V2[0], this.Pos_V2[1]);
                 Console.WriteLine("TTL : {0} \n", this.TTL);
+
             }
         }
     }
