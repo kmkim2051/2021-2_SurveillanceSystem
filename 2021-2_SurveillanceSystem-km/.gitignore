@@ -352,3 +352,5 @@ MigrationBackup/
 *.csproj
 *.sln
 *.cache
+
+.DS_Store
