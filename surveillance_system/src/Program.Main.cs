@@ -56,6 +56,12 @@ namespace surveillance_system
                     }
                 }
             }
+            // 각 CCTV의 보행자 탐지횟수 계산
+            int[] cctv_detecting_cnt = new int[N_CCTV];
+            int[] cctv_missing_cnt = new int[N_CCTV];
+
+            int[,] missed_map_h = new int[N_CCTV, N_Ped];
+            int[,] missed_map_v = new int[N_CCTV, N_Ped];
 
             int[,] detected_map = new int[N_CCTV, N_Ped];
 
@@ -110,11 +116,33 @@ namespace surveillance_system
                     if (h_detected == 1 && v_detected == 1)
                     {
                         detected_map[i, j] = 1;
+                        // 각 CCTV[i]의 보행자 탐지 횟수 증가
+                        cctv_detecting_cnt[i]++;
+                    }
+                    else // cctv[i]가 보행자[j]를 h or v 탐지 실패 여부 추가
+                    {
+                      cctv_missing_cnt[i]++;
+                      if(h_detected == 0) 
+                        missed_map_h[i, j] = 1;
+                      if(v_detected == 0) 
+                        missed_map_v[i, j] = 1;
                     }
                 }
             }
+            // 각 cctv는 h, v 축에서 얼마나 많이 놓쳤나?
+            int[] cctv_missing_count_h = new int[N_CCTV];
+            int[] cctv_missing_count_v = new int[N_CCTV];
 
-            int[] cnt = new int[N_Ped];
+            for(int i = 0 ; i < N_CCTV; i++)
+            for(int j = 0 ; j < N_Ped; j++)
+            {
+              cctv_missing_count_h[i] += missed_map_h[i, j];
+              cctv_missing_count_v[i] += missed_map_v[i, j];
+            }
+            // 보행자를 탐지한 cctv 수
+            int[] detecting_cctv_cnt = new int[N_Ped];
+            // 보행자를 탐지하지 못한 cctv 수
+            int[] missing_cctv_cnt = new int[N_Ped];
 
             Console.WriteLine("=== 성공 ====");
             // detection 결과 출력
@@ -125,7 +153,11 @@ namespace surveillance_system
                     if (detected_map[i, j] == 1)
                     {
                         Console.WriteLine("{0}번째 CCTV가 {1}번째 보행자를 감지", i + 1, j + 1);
-                        cnt[j]++;
+                        detecting_cctv_cnt[j]++;
+                    }
+                    else
+                    {
+                      missing_cctv_cnt[j]++;
                     }
                 }
             }
@@ -133,13 +165,13 @@ namespace surveillance_system
             Console.WriteLine("\n\n=== 실패 ====");
             for (int i = 0; i < N_Ped; i++)
             {
-                if (cnt[i] == 0)
+                if (detecting_cctv_cnt[i] == 0)
                 {
                     Console.WriteLine("{0}번째 보행자 추적 실패 ", i + 1);
                 }
             }
 
-            return cnt;
+            return detecting_cctv_cnt;
         }
 
         
@@ -313,21 +345,6 @@ namespace surveillance_system
                     // Line 118~146
                     /*  여기부턴 Road_Builder 관련 정보가 없으면 의미가 없을거같아서 주석처리했어용..
                         그리고 get_Sectoral_Coverage 이런함수도 지금은 구현해야할지 애매해서..?
-
-                    [CCTV(i).R_blind, CCTV(i).R_eff, BorderLine_blind, BorderLine_eff] = get_Sectoral_Coverage(CCTV(i).H_AOV, CCTV(i).V_AOV, ...
-                                                                                                   CCTV(i).ViewAngleH, CCTV(i).ViewAngleV, ...
-                                                                                                   Ped_Height, CCTV(i).X, CCTV(i).Y, CCTV(i).Z);
-                    CCTV(i).BorderLine_blind_X(1,:) = BorderLine_blind(:,1);
-                    CCTV(i).BorderLine_blind_Y(1,:) = BorderLine_blind(:,2);
-                    
-                    CCTV(i).BorderLine_eff_X(1,:) = BorderLine_eff(:,1);
-                    CCTV(i).BorderLine_eff_Y(1,:) = BorderLine_eff(:,2);
-
-                    */
-                    /*
-                     [CCTV(i).PPM_H(1,:), CCTV(i).PPM_V(1,:), CCTV(i).SurvDist_H(1,:), CCTV(i).SurvDist_V(1,:)] ...
-                    = get_PixelDensity(Dist, CCTV(i).WD, CCTV(i).HE, CCTV(i).Focal_Length, CCTV(i).imW, CCTV(i).imH);
-                    Eff_Dist_Range = CCTV(i).R_blind:CCTV(i).R_eff;
                     */
 
                     cctvs[i]
@@ -343,25 +360,6 @@ namespace surveillance_system
                         cctv.get_V_FOV(Dist, cctv.HE, cctv.Focal_Length, cctv.ViewAngleV, cctv.X,cctv.Y);
                         cctv.get_H_FOV(Dist, cctv.WD, cctv.Focal_Length, cctv.ViewAngleH, cctv.X, cctv.Y);
                     }
-
-                    /*
-                    [FOV_X2, FOV_Y2] = get_V_FOV(Dist, CCTV(i).HE, CCTV(i).Focal_Length, CCTV(i).ViewAngleV, CCTV(i).X, CCTV(i).Z);
-                    CCTV(i).V_FOV_X0(1,:) = FOV_X2(1,:);
-                    CCTV(i).V_FOV_X1(1,:) = FOV_X2(2,:);
-                    CCTV(i).V_FOV_X2(1,:) = FOV_X2(3,:);
-                    CCTV(i).V_FOV_Z0(1,:) = FOV_Y2(1,:);
-                    CCTV(i).V_FOV_Z1(1,:) = FOV_Y2(2,:);
-                    CCTV(i).V_FOV_Z2(1,:) = FOV_Y2(3,:);    
-            %         CCTV.EffectDist(i,:) = EffectDist;
-                            
-                    [FOV_X, FOV_Y] = get_H_FOV(Eff_Dist_Range, CCTV(i).WD, CCTV(i).Focal_Length,  CCTV(i).ViewAngleH, CCTV(i).X, CCTV(i).Y, CCTV(i).SurvDist_H(1,:));
-                    CCTV(i).H_FOV_X0(1,:) = FOV_X(1,:);
-                    CCTV(i).H_FOV_X1(1,:) = FOV_X(2,:);
-                    CCTV(i).H_FOV_X2(1,:) = FOV_X(3,:);
-                    CCTV(i).H_FOV_Y0(1,:) = FOV_Y(1,:);
-                    CCTV(i).H_FOV_Y1(1,:) = FOV_Y(2,:);
-                    CCTV(i).H_FOV_Y2(1,:) = FOV_Y(3,:);
-                  */
 
                     //cctvs[i].printCCTVInfo();
                 }
