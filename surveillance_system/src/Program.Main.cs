@@ -11,11 +11,12 @@ namespace surveillance_system
 
         // Configuration: simulation time
         const double aUnitTime = 100 * 0.001; // (sec)
+        public static Road road = new Road();
 
         /* --------------------------------------
          * 추적 여부 검사 함수
         -------------------------------------- */
-        static void checkDetection(int N_CCTV, int N_Ped)
+        static int[] checkDetection(int N_CCTV, int N_Ped)
         {
             // 거리 검사
             int[,] candidate_detected_ped_h = new int[N_CCTV, N_Ped];
@@ -137,13 +138,14 @@ namespace surveillance_system
                     Console.WriteLine("{0}번째 보행자 추적 실패 ", i + 1);
                 }
             }
+
+            return cnt;
         }
 
         
         
         static void Main(string[] args)
         {
-            Road road = new Road();
             /*------------------------------------------------------------------------
               % note 1) To avoid confusing, all input parameters for a distance has a unit as a milimeter
             -------------------------------------------------------------------------*/
@@ -202,7 +204,7 @@ namespace surveillance_system
             }
 
             // [line_55]----------------------------------------------------------------------
-            const int N_CCTV = 6;
+            const int N_CCTV = 10;
             double[] Dist = new double[10000];
             double[] Height = new double[10000];
             for (int i = 0; i < 10000; i++)
@@ -212,7 +214,7 @@ namespace surveillance_system
             }
 
             // Configuration: Pedestrian (Target Object)
-            const int N_Ped = 5;
+            const int N_Ped = 6;
             const int Ped_Width = 900; // (mm)
             const int Ped_Height = 1700; // (mm)
             const int Ped_Velocity = 1500; // (mm/s)
@@ -255,6 +257,7 @@ namespace surveillance_system
                 //ped
                 foreach(Pedestrian ped in peds)
                 {
+                    
                     double minDist = 0.0;
                     int idx_minDist = 0;
                     double[] Dist_Map = new double[road.DST.GetLength(0)];
@@ -262,23 +265,28 @@ namespace surveillance_system
                     Calc_Dist_and_get_MinDist(road.DST, ped.X, ped.Y, ref Dist_Map, ref minDist, ref idx_minDist);
                     double dst_x = road.DST[idx_minDist, 0];
                     double dst_y = road.DST[idx_minDist, 1];
+                    
 
                     Console.WriteLine("\n============================================================\n");
                     Console.WriteLine("{0}번째 보행자 -  {1}번째 목적지(좌표: {2}, {3}) ",
                         Array.IndexOf(peds, ped)+1, idx_minDist, dst_x, dst_y);
 
+
                     // 보행자~목적지 벡터
+                    /*
                     double[] A = new double[2];
                     A[0] = dst_x - ped.X;
-                    A[1] = dst_y - ped.Y;
+                    A[1] = dst_y - ped.Y;        
 
                     double[] B = { 0.001, 0 };
-                    double direction = Math.Round(Math.Acos(InnerProduct(A, B) / (Norm(A) * Norm(B))),2);
+                    double direction = Math.Round(Math.Acos(InnerProduct(A, B) / (Norm(A) * Norm(B))),8);
                     if(ped.Y > dst_y)
                     {
-                        direction = 2 * Math.PI - direction; 
+                        direction = Math.Round(2 * Math.PI - direction, 8); 
                     }
-                    ped.define_PED(Ped_Width, Ped_Height, direction, dst_x, dst_y, Ped_Velocity);
+                    */           
+                    ped.define_PED(Ped_Width, Ped_Height, dst_x, dst_y, Ped_Velocity);
+                    ped.setDirection();
                     ped.TTL = (int)Math.Ceiling((minDist / ped.Velocity) / aUnitTime);
                     ped.printPedInfo();
                 }
@@ -363,43 +371,75 @@ namespace surveillance_system
             *  도로 정보 생성 + 보행자/CCTV 초기화 끝
             ------------------------------------------- */
 
-            double Sim_Time = 1;
+            double Sim_Time = 10;
             double Now = 0;
 
             Console.WriteLine(">>> Simulating . . . \n");
             // R_Surv_Time = zeros(N_Ped, 4);
+            
+            
+            string[] traffic_x = new string[(int)(Sim_Time / aUnitTime)]; // csv 파일 출력 위한 보행자별 x좌표
+            string[] traffic_y = new string[(int)(Sim_Time / aUnitTime)]; // csv 파일 출력 위한 보행자별 y좌표
+            string[] detection = new string[(int)(Sim_Time / aUnitTime)]; // csv 파일 출력 위한 추적여부
+            string header = "";
 
-            /*
+            // simulation
             while (Now < Sim_Time)
             {
-                // 보행자 이동
-                foreach(Pedestrian ped in peds)
+                // 추적 검사
+                int[] res = checkDetection(N_CCTV, N_Ped);
+                for(int i = 0; i < res.Length; i++)
                 {
-                    ped.move();
+                    if (res[i] > 0)
+                    {
+                        detection[i] += "1,";
+                    }
+                    else
+                    {
+                        detection[i] += "0,";
+                    }
                 }
 
-                // CCTV 감시 방향 변경
+                // 이동
+                for (int i = 0; i < peds.Length; i++)
+                {
+                    if(peds[i].X<-1000 || peds[i].X > 25000)
+                    {
+                        traffic_x[i] += "Out of range,";
+                    }
+                    else
+                    {
+                        traffic_x[i] += Math.Round(peds[i].X, 2) + ",";
+                    }
 
+                    if (peds[i].Y < -1000 || peds[i].Y > 25000)
+                    {
+                        traffic_y[i] += "Out of range,";
+                    }
+                    else
+                    {
+                        traffic_y[i] += Math.Round(peds[i].Y, 2) + ",";
+                    }
+
+                    peds[i].move();
+                }
+
+                header += Convert.ToString(Math.Round(Now,1))+",";
                 Now += aUnitTime;
-
-                Console.WriteLine("\nRESULT({0})  \n", Now);
-               checkDetection(N_CCTV, N_Ped);
             }
-            */
 
-            // test
-            Console.WriteLine("보행자 0의 시작 위치 ({0} , {1}) \n", Math.Round(peds[0].X, 2), Math.Round(peds[0].Y, 2));
-            Console.WriteLine("보행자 0의 목적지 ({0} , {1})  \n\n", Math.Round(peds[0].DST_X, 2), Math.Round(peds[0].DST_Y, 2));
-            Console.WriteLine("보행자 0의 방향: {0}  \n\n", peds[0].Direction);
-            while (Now < Sim_Time)
+            // create .csv file
+            for(int i = 0; i < peds.Length; i++)
             {
-
-                peds[0].move();
-                Console.WriteLine("보행자 0의 현재 위치 ({0} , {1})  ", Math.Round(peds[0].X, 2), Math.Round(peds[0].Y, 2));
-
-                Now += aUnitTime;
+                string fileName = "ped"+i+".csv";
+                using (System.IO.StreamWriter file = new System.IO.StreamWriter(@fileName))
+                {
+                    file.WriteLine(header);
+                    file.WriteLine(traffic_x[i]);
+                    file.WriteLine(traffic_y[i]);
+                    file.WriteLine(detection[i]);
+                }
             }
-
         }
 
     }
