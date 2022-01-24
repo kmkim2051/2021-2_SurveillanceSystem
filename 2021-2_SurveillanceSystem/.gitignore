@@ -352,3 +352,5 @@ MigrationBackup/
 *.csproj
 *.sln
 *.cache
+# Mac OS Config file
+.DS_Store
