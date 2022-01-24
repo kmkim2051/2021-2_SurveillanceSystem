@@ -194,13 +194,16 @@ namespace surveillance_system
 
             public double ViewAngleV;
 
-            public double MAX_Dist_X;
-
-            public double MAX_Dist_Y;
+            public double Eff_Dist_From;
+            public double Eff_Dist_To;
 
             public double Direction;
 
             public bool isFixed = false;
+
+            // 최대거리
+            public double Max_Dist;
+
 
             // new FOV class member
 
@@ -227,7 +230,32 @@ namespace surveillance_system
               if(isFixed) return;
               setViewAngleH((ViewAngleH + angle) % 360);
             }
-
+            public double calcDistToPed(Pedestrian ped)
+            {
+              // 이차원 상 거리
+              return Math.Sqrt(Math.Pow(Math.Abs(X - ped.X),2) 
+                              + Math.Pow(Math.Abs(Y - ped.Y),2));
+            }
+            public double calcEffDistToPed(Pedestrian ped)
+            {
+              // matlab code
+              // CCTV.R_eff(i) = (CCTV.Z(i)-Ped_Height*1.0)/tand(abs(CCTV.ViewAngleV(i))-(CCTV.V_AOV(i)/2));
+              double distance = (Z-ped.H*1.0) / Math.Tan(Math.Abs(ViewAngleV) - (V_AOV/2));
+              return distance;
+            }
+            public double calcBlindToPed(Pedestrian ped)
+            {
+              // matlab code
+              // CCTV.R_blind(i) = CCTV.Z(i)/tand(CCTV.V_AOV(i)/2 + abs(CCTV.ViewAngleV(i)))
+              double distance = Z / Math.Tan((V_AOV/2) + Math.Abs(ViewAngleV));
+              return distance;
+            }
+            public bool isPedInEffDist(Pedestrian ped)
+            {
+              return (calcDistToPed(ped) < Max_Dist) // 기기 성능에 따른 최대 감시거리 
+                  && (calcDistToPed(ped) >= calcBlindToPed(ped)) // blind ~ 유효거리
+                  && (calcDistToPed(ped) <= calcEffDistToPed(ped));
+            }
             public void get_H_FOV(
                 double[] Dist,
                 double HE,

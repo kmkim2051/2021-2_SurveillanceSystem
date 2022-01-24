@@ -78,7 +78,7 @@ namespace surveillance_system
             // CCTV 50 = 15초
             // CCTV 75 = 30초
             // CCTV 100 =  55초
-            const int N_CCTV = 60;
+            const int N_CCTV = 10;
             double[] Dist = new double[10000];
             double[] Height = new double[10000];
             for (int i = 0; i < 10000; i++)
@@ -88,7 +88,7 @@ namespace surveillance_system
             }
 
             // Configuration: Pedestrian (Target Object)
-            const int N_Ped = 1000;
+            const int N_Ped = 100;
             // const int N_Ped = 5;
             const int Ped_Width = 900; // (mm)
             const int Ped_Height = 1700; // (mm)
@@ -174,6 +174,9 @@ namespace surveillance_system
 
                     cctvs[i].H_AOV = 2 * Math.Atan(WD / (2 * Lens_FocalLength));
                     cctvs[i].V_AOV = 2 * Math.Atan(WD / (2 * Lens_FocalLength));
+
+                    // 기기 성능상의 최대 감시거리 (임시값)
+                    cctvs[i].Max_Dist = 50 * 100 * 10; // 50m (milimeter)
 
                     // Line 118~146
                     /*  여기부턴 Road_Builder 관련 정보가 없으면 의미가 없을거같아서 주석처리했어용..
@@ -414,7 +417,8 @@ namespace surveillance_system
                         }
                     }
                     // 탐지 가능 여부
-                    if (h_detected == 1 && v_detected == 1)
+                    if ((h_detected == 1 && v_detected == 1) 
+                        && cctvs[i].isPedInEffDist(peds[j]))
                     {
                         // CCTV[i] 가 보행자[j]를 탐지
                         detected_map[i, j] = 1;
