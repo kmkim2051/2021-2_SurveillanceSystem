@@ -24,6 +24,7 @@ namespace surveillance_system
             public double[,] lane_v_right; // 세로 중앙선 오른쪽 라인 x값
 
             public double[,] DST; // 도로 교차점
+            public int size;
 
             public void roadBuilder(int wd, int intvl, int n_interval, int n_cctv, int n_ped)
             {
@@ -44,6 +45,7 @@ namespace surveillance_system
                 // 도로 벡터 초기화
                 double incr = 100;
                 int laneSize = (int)((intvl + wd) * (n_interval - 1) / incr);
+                size = laneSize * (int)incr;
                 //Console.WriteLine("laneSize = {0}", laneSize);
                 laneVector = new double[laneSize];
 
