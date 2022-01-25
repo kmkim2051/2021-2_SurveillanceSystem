@@ -169,15 +169,15 @@ namespace surveillance_system
             // 보행자를 탐지하지 못한 cctv 수
             int[] missing_cctv_cnt = new int[N_Ped];
 
-            Console.WriteLine("=== 성공 ====");
-            // detection 결과 출력
+            //Console.WriteLine("=== 성공 ====");
+            // detection 결과 출력 
+             
             for (int i = 0; i < N_CCTV; i++)
             {
                 for (int j = 0; j < N_Ped; j++)
                 {
                     if (detected_map[i, j] == 1)
                     {
-                        Console.WriteLine("{0}번째 CCTV가 {1}번째 보행자를 감지", i + 1, j + 1);
                         detecting_cctv_cnt[j]++;
                     }
                     else
@@ -187,14 +187,22 @@ namespace surveillance_system
                 }
             }
 
-            Console.WriteLine("\n\n=== 실패 ====");
+
+            Console.WriteLine("---------------------------------");
+            Console.WriteLine("   성공  ||   실패  ");
             for (int i = 0; i < N_Ped; i++)
             {
                 if (detecting_cctv_cnt[i] == 0)
                 {
-                    Console.WriteLine("{0}번째 보행자 추적 실패 ", i + 1);
+                    Console.WriteLine("         ||   ped{0} ", i + 1);
+                }
+                else
+                {
+                    Console.WriteLine("ped{0} ", i + 1);
                 }
             }
+            Console.WriteLine("---------------------------------");
+
 
             return returnArr;
         }
@@ -230,8 +238,8 @@ namespace surveillance_system
             int Road_N_Interval = 0;
             if (On_Road_Builder)
             {
-                Road_Width = 2000; // mm
-                Road_Interval = 10000; // mm, 10 meter
+                Road_Width = 10000; // mm
+                Road_Interval = 235000; // mm, 10 meter
                 Road_N_Interval = 3;
             }
 
@@ -260,7 +268,7 @@ namespace surveillance_system
                 V_FOV_[i] = X[i] * HE / Lens_FocalLength;
             }
 
-            const int N_CCTV = 10;
+            const int N_CCTV = 36;
             double[] Dist = new double[10000];
             double[] Height = new double[10000];
             for (int i = 0; i < 10000; i++)
@@ -270,7 +278,7 @@ namespace surveillance_system
             }
 
             // Configuration: Pedestrian (Target Object)
-            const int N_Ped = 6;
+            const int N_Ped = 10;
             const int Ped_Width = 900; // (mm)
             const int Ped_Height = 1700; // (mm)
             const int Ped_Velocity = 1500; // (mm/s)
@@ -295,6 +303,8 @@ namespace surveillance_system
                 road.roadBuilder(Road_Width, Road_Interval, Road_N_Interval, N_CCTV, N_Ped); // 도로 정보 생성
                 road.printRoadInfo();
 
+                /*
+                 *  보행자, cctv 초기 설정
                 for (int i = 0; i < N_Ped; i++)
                 {
                     Console.WriteLine("{0}번째 보행자 = ({1}, {2}) ", i + 1, peds[i].X, peds[i].Y);
@@ -304,6 +314,7 @@ namespace surveillance_system
                 {
                     Console.WriteLine("{0}번째 cctv = ({1}, {2}) ", i + 1, cctvs[i].X, cctvs[i].Y);
                 }
+                */
 
                 //ped init
                 foreach(Pedestrian ped in peds)
@@ -317,9 +328,9 @@ namespace surveillance_system
                     double dst_x = road.DST[idx_minDist, 0];
                     double dst_y = road.DST[idx_minDist, 1];
         
-                    Console.WriteLine("\n============================================================\n");
-                    Console.WriteLine("{0}번째 보행자 -  {1}번째 목적지(좌표: {2}, {3}) ",
-                       Array.IndexOf(peds, ped)+1, idx_minDist, dst_x, dst_y);
+                    //Console.WriteLine("\n============================================================\n");
+                    //Console.WriteLine("{0}번째 보행자 -  {1}번째 목적지(좌표: {2}, {3}) ",
+                    //   Array.IndexOf(peds, ped)+1, idx_minDist, dst_x, dst_y);
 
 
                     // 보행자~목적지 벡터
@@ -393,7 +404,7 @@ namespace surveillance_system
             *  도로 정보 생성 + 보행자/CCTV 초기화 끝
             ------------------------------------------- */
 
-            double Sim_Time = 10;
+            double Sim_Time = 60;
             double Now = 0;
 
             Console.WriteLine(">>> Simulating . . . \n");
@@ -405,9 +416,12 @@ namespace surveillance_system
             string[] detection = new string[(int)(Sim_Time / aUnitTime)]; // csv 파일 출력 위한 추적여부
             string header = "";
 
+            int road_min = -Road_Interval / 2;
+            int road_max = (Road_Interval + Road_Width) * 2 + Road_Interval / 2;
             // simulation
             while (Now < Sim_Time)
             {
+                //Console.WriteLine(".");
                 // 추적 검사
                 int[] res = checkDetection(N_CCTV, N_Ped);
                 for(int i = 0; i < res.Length; i++)
@@ -418,7 +432,7 @@ namespace surveillance_system
                 // 이동
                 for (int i = 0; i < peds.Length; i++)
                 {
-                    if(peds[i].X<-1000 || peds[i].X > 25000)
+                    if(peds[i].X< road_min || peds[i].X > road_max)
                     {
                         traffic_x[i] += "Out of range,";
                     }
@@ -427,7 +441,7 @@ namespace surveillance_system
                         traffic_x[i] += Math.Round(peds[i].X, 2) + ",";
                     }
 
-                    if (peds[i].Y < -1000 || peds[i].Y > 25000)
+                    if (peds[i].Y < road_min || peds[i].Y > road_max)
                     {
                         traffic_y[i] += "Out of range,";
                     }
