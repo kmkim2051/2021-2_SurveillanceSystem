@@ -408,9 +408,10 @@ namespace surveillance_system
             double Now = 0;
 
             Console.WriteLine(">>> Simulating . . . \n");
-            // R_Surv_Time = zeros(N_Ped, 4);
-            
-            
+            int[] R_Surv_Time = new int[N_Ped]; // 탐지 
+            int[] directionError = new int[N_Ped]; // 방향 미스
+            int[] outOfRange = new int[N_Ped]; // 거리 범위 밖
+
             string[] traffic_x = new string[(int)(Sim_Time / aUnitTime)]; // csv 파일 출력 위한 보행자별 x좌표
             string[] traffic_y = new string[(int)(Sim_Time / aUnitTime)]; // csv 파일 출력 위한 보행자별 y좌표
             string[] detection = new string[(int)(Sim_Time / aUnitTime)]; // csv 파일 출력 위한 추적여부
@@ -427,6 +428,10 @@ namespace surveillance_system
                 for(int i = 0; i < res.Length; i++)
                 {
                     detection[i] += Convert.ToString(res[i]) + ",";
+
+                    if (res[i] == 0) outOfRange[i]++;
+                    else if (res[i] == -1) directionError[i]++;
+                    else if (res[i] == 1) R_Surv_Time[i]++;
                 }
 
                 // 이동
@@ -469,6 +474,18 @@ namespace surveillance_system
                     file.WriteLine(detection[i]);
                 }
             }
+
+            // 결과
+            Console.WriteLine("\n============ SIMULATION RESULT ============");
+            int sum = R_Surv_Time.Sum();
+            Console.WriteLine("Surv Time : {0} ", sum / N_Ped);
+
+            sum = outOfRange.Sum();
+            Console.WriteLine("거리상 미탐지 : {0} ", sum / N_Ped);
+
+            sum = directionError.Sum();
+            Console.WriteLine("방향 미스 : {0} ", sum / N_Ped);
+
         }
 
     }
