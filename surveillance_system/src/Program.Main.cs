@@ -1,6 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using System;
 using System.Linq;
+using System.Diagnostics;
 
 namespace surveillance_system
 {
@@ -419,6 +420,9 @@ namespace surveillance_system
 
             int road_min = -Road_Interval / 2;
             int road_max = (Road_Interval + Road_Width) * 2 + Road_Interval / 2;
+
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
             // simulation
             while (Now < Sim_Time)
             {
@@ -461,9 +465,10 @@ namespace surveillance_system
                 header += Convert.ToString(Math.Round(Now,1))+",";
                 Now += aUnitTime;
             }
+            stopwatch.Stop();
 
             // create .csv file
-            for(int i = 0; i < peds.Length; i++)
+            for (int i = 0; i < peds.Length; i++)
             {
                 string fileName = "ped"+i+".csv";
                 using (System.IO.StreamWriter file = new System.IO.StreamWriter(@fileName))
@@ -477,14 +482,15 @@ namespace surveillance_system
 
             // 결과
             Console.WriteLine("\n============ SIMULATION RESULT ============");
+            Console.WriteLine("Execution time : {0}", stopwatch.ElapsedMilliseconds + "ms");
             int sum = R_Surv_Time.Sum();
-            Console.WriteLine("Surv Time : {0} ", sum / N_Ped);
+            Console.WriteLine("Surv Time : {0} ", (double)sum / N_Ped);
 
             sum = outOfRange.Sum();
-            Console.WriteLine("거리상 미탐지 : {0} ", sum / N_Ped);
+            Console.WriteLine("거리상 미탐지 : {0} ", (double)sum / N_Ped);
 
             sum = directionError.Sum();
-            Console.WriteLine("방향 미스 : {0} ", sum / N_Ped);
+            Console.WriteLine("방향 미스 : {0} ", (double)sum / N_Ped);
 
         }
 
