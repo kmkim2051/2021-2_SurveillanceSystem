@@ -262,13 +262,6 @@ namespace surveillance_system
             double[] H_FOV_ = new double[100000];
             double[] V_FOV_ = new double[100000];
 
-            for (int i = 0; i < 100000; i++)
-            {
-                X[i] = i + 1;
-                H_FOV_[i] = X[i] * WD / Lens_FocalLength;
-                V_FOV_[i] = X[i] * HE / Lens_FocalLength;
-            }
-
             const int N_CCTV = 36;
             double[] Dist = new double[10000];
             double[] Height = new double[10000];
@@ -392,11 +385,8 @@ namespace surveillance_system
                         cctvs[i].imW,
                         cctvs[i].imH);
 
-                    foreach(CCTV cctv in cctvs)
-                    {
-                        cctv.get_V_FOV(Dist, cctv.HE, cctv.Focal_Length, cctv.ViewAngleV, cctv.X,cctv.Y);
-                        cctv.get_H_FOV(Dist, cctv.WD, cctv.Focal_Length, cctv.ViewAngleH, cctv.X, cctv.Y);
-                    }
+                    cctvs[i].get_V_FOV(Dist, cctvs[i].HE, cctvs[i].Focal_Length, cctvs[i].ViewAngleV, cctvs[i].X, cctvs[i].Y);
+                    cctvs[i].get_H_FOV(Dist, cctvs[i].WD, cctvs[i].Focal_Length, cctvs[i].ViewAngleH, cctvs[i].X, cctvs[i].Y);
 
                     //cctvs[i].printCCTVInfo();
                 }
