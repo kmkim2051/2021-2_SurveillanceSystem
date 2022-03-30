@@ -148,9 +148,11 @@ namespace surveillance_system
                     else // cctv[i]가 보행자[j]를 h or v 탐지 실패 여부 추가
                     {
                         cctv_missing_cnt[i]++;
-                      if(h_detected == 0) 
+                        
+                        if(h_detected == 0) 
                         missed_map_h[i, j] = 1;
-                      if(v_detected == 0) 
+
+                        if(v_detected == 0) 
                         missed_map_v[i, j] = 1;
 
                         returnArr[j] = (returnArr[j] == 1 ? 1 : -1);
@@ -164,8 +166,8 @@ namespace surveillance_system
             for(int i = 0 ; i < N_CCTV; i++)
             for(int j = 0 ; j < N_Ped; j++)
             {
-              cctv_missing_count_h[i] += missed_map_h[i, j];
-              cctv_missing_count_v[i] += missed_map_v[i, j];
+                cctv_missing_count_h[i] += missed_map_h[i, j];
+                cctv_missing_count_v[i] += missed_map_v[i, j];
             }
             // 보행자를 탐지한 cctv 수
             int[] detecting_cctv_cnt = new int[N_Ped];
@@ -174,7 +176,6 @@ namespace surveillance_system
 
             //Console.WriteLine("=== 성공 ====");
             // detection 결과 출력 
-             
             for (int i = 0; i < N_CCTV; i++)
             {
                 for (int j = 0; j < N_Ped; j++)
@@ -185,7 +186,7 @@ namespace surveillance_system
                     }
                     else
                     {
-                      missing_cctv_cnt[j]++;
+                        missing_cctv_cnt[j]++;
                     }
                 }
             }
@@ -260,250 +261,251 @@ namespace surveillance_system
             const int N_Ped = 200;
 
 
+            // rep 반복하며 평균 수행시간 계산
             for(int rep = 0 ; rep < 3 ; rep++) {
-              Stopwatch stopwatch1 = new Stopwatch();
-              stopwatch1.Start();
+                Stopwatch stopwatch1 = new Stopwatch();
+                stopwatch1.Start();
 
-            // Step 1-2) calculate vertical/horizontal AOV
-            double H_AOV = RadToDeg(2 * Math.Atan(WD / (2 * Lens_FocalLength))); // Horizontal AOV
-            double V_AOV = RadToDeg(2 * Math.Atan(HE / (2 * Lens_FocalLength))); // Vertical AOV
+                // Step 1-2) calculate vertical/horizontal AOV
+                double H_AOV = RadToDeg(2 * Math.Atan(WD / (2 * Lens_FocalLength))); // Horizontal AOV
+                double V_AOV = RadToDeg(2 * Math.Atan(HE / (2 * Lens_FocalLength))); // Vertical AOV
 
-            // double D_AOV = RadToDeg(2 * Math.Atan(Diag / (2 * Lens_FocalLength)));
-            // (mm) distance
-            double[] Dist = new double[10000];
-            double[] Height = new double[10000];
-            for (int i = 0; i < 10000; i++)
-            {
-                Dist[i] = i;
-                Height[i] = i;
-            }
+                // double D_AOV = RadToDeg(2 * Math.Atan(Diag / (2 * Lens_FocalLength)));
+                // (mm) distance
+                double[] Dist = new double[10000];
+                double[] Height = new double[10000];
+                for (int i = 0; i < 10000; i++)
+                {
+                    Dist[i] = i;
+                    Height[i] = i;
+                }
 
-            // Configuration: Pedestrian (Target Object)
-            const int Ped_Width = 900; // (mm)
-            const int Ped_Height = 1700; // (mm)
-            const int Ped_Velocity = 1500; // (mm/s)
+                // Configuration: Pedestrian (Target Object)
+                const int Ped_Width = 900; // (mm)
+                const int Ped_Height = 1700; // (mm)
+                const int Ped_Velocity = 1500; // (mm/s)
 
-            cctvs = new CCTV[N_CCTV];
-            for (int i = 0; i < N_CCTV; i++)
-            {
-                cctvs[i] = new CCTV();
-            }
-            peds = new Pedestrian[N_Ped];
-            for (int i = 0; i < N_Ped; i++)
-            {
-                peds[i] = new Pedestrian();
-            }
-
-
-            /* -------------------------------------------
-             *  도로 정보 생성 + 보행자/CCTV 초기화 시작
-            ------------------------------------------- */
-            // time check
-
-
-            if (On_Road_Builder)
-            {
-                road.roadBuilder(Road_Width, Road_Interval, Road_N_Interval, N_CCTV, N_Ped); // 도로 정보 생성
-                road.printRoadInfo();
-
-                /*
-                 *  보행자, cctv 초기 설정
+                cctvs = new CCTV[N_CCTV];
+                for (int i = 0; i < N_CCTV; i++)
+                {
+                    cctvs[i] = new CCTV();
+                }
+                peds = new Pedestrian[N_Ped];
                 for (int i = 0; i < N_Ped; i++)
                 {
-                    Console.WriteLine("{0}번째 보행자 = ({1}, {2}) ", i + 1, peds[i].X, peds[i].Y);
+                    peds[i] = new Pedestrian();
                 }
-                Console.WriteLine("\n============================================================\n");
-                for (int i = 0; i < N_CCTV; i++)
+
+
+                /* -------------------------------------------
+                *  도로 정보 생성 + 보행자/CCTV 초기화 시작
+                ------------------------------------------- */
+                // time check
+
+
+                if (On_Road_Builder)
                 {
-                    Console.WriteLine("{0}번째 cctv = ({1}, {2}) ", i + 1, cctvs[i].X, cctvs[i].Y);
-                }
-                */
+                    road.roadBuilder(Road_Width, Road_Interval, Road_N_Interval, N_CCTV, N_Ped); // 도로 정보 생성
+                    road.printRoadInfo();
 
-                //ped init
-                foreach(Pedestrian ped in peds)
-                {
-                    
-                    double minDist = 0.0;
-                    int idx_minDist = 0;
-                    double[] Dist_Map = new double[road.DST.GetLength(0)];
-                    
-                    Calc_Dist_and_get_MinDist(road.DST, ped.X, ped.Y, ref Dist_Map, ref minDist, ref idx_minDist);
-                    double dst_x = road.DST[idx_minDist, 0];
-                    double dst_y = road.DST[idx_minDist, 1];
-        
-                    //Console.WriteLine("\n============================================================\n");
-                    //Console.WriteLine("{0}번째 보행자 -  {1}번째 목적지(좌표: {2}, {3}) ",
-                    //   Array.IndexOf(peds, ped)+1, idx_minDist, dst_x, dst_y);
-
-
-                    // 보행자~목적지 벡터
                     /*
-                    double[] A = new double[2];
-                    A[0] = dst_x - ped.X;
-                    A[1] = dst_y - ped.Y;        
-
-                    double[] B = { 0.001, 0 };
-                    double direction = Math.Round(Math.Acos(InnerProduct(A, B) / (Norm(A) * Norm(B))),8);
-                    if(ped.Y > dst_y)
+                    *  보행자, cctv 초기 설정
+                    for (int i = 0; i < N_Ped; i++)
                     {
-                        direction = Math.Round(2 * Math.PI - direction, 8); 
+                        Console.WriteLine("{0}번째 보행자 = ({1}, {2}) ", i + 1, peds[i].X, peds[i].Y);
                     }
-                    */           
-                    ped.define_PED(Ped_Width, Ped_Height, dst_x, dst_y, Ped_Velocity);
-                    ped.setDirection();
-                    ped.TTL = (int)Math.Ceiling((minDist / ped.Velocity) / aUnitTime);
-                    // ped.printPedInfo();
-                }
-                // cctv init
-                for (int i = 0; i < N_CCTV; i++)
-                {
-                   // 220317
-                   // Height.Max() 는 고정값 (=대충 10000)..
-                   // 상수로 바꿔도 될듯??
-                   // default Z는 3000
-                   // 3000 ~ 10000 사이 값, 즉 7000이 변하는 값
-                   // default(min) : 3000, variant : 7000 
-                   // maxZ = min + variant 이런식으로?..
-
-                    // cctvs[i].Z =
-                    //     (int)Math.Ceiling(rand.NextDouble() * (Height.Max() - 3000)) + 3000; // milimeter
-                    cctvs[i].setZ((int)Math.Ceiling(rand.NextDouble() * (Height.Max() - 3000)) + 3000);
-                    cctvs[i].WD = WD;
-                    cctvs[i].HE = HE;
-                    cctvs[i].imW = (int)imW;
-                    cctvs[i].imH = (int)imH;
-                    cctvs[i].Focal_Length = Lens_FocalLength;
-                    // 220104 초기 각도 설정
-                    // cctvs[i].ViewAngleH = rand.NextDouble() * 360;
-                    // cctvs[i].ViewAngleV = -35 - 20 * rand.NextDouble();
-                    cctvs[i].setViewAngleH(rand.NextDouble() * 360);
-                    cctvs[i].setViewAngleV(-35 - 20 * rand.NextDouble());
-                    
-                    cctvs[i].setFixMode(true); // default
-
-                    cctvs[i].H_AOV = 2 * Math.Atan(WD / (2 * Lens_FocalLength));
-                    cctvs[i].V_AOV = 2 * Math.Atan(WD / (2 * Lens_FocalLength));
-
-                    // 기기 성능상의 최대 감시거리 (임시값)
-                    cctvs[i].Max_Dist = 50 * 100 * 10; // 50m (milimeter)
-
-                    // Line 118~146
-                    /*  여기부턴 Road_Builder 관련 정보가 없으면 의미가 없을거같아서 주석처리했어용..
-                        그리고 get_Sectoral_Coverage 이런함수도 지금은 구현해야할지 애매해서..?
+                    Console.WriteLine("\n============================================================\n");
+                    for (int i = 0; i < N_CCTV; i++)
+                    {
+                        Console.WriteLine("{0}번째 cctv = ({1}, {2}) ", i + 1, cctvs[i].X, cctvs[i].Y);
+                    }
                     */
 
-                    cctvs[i]
-                        .get_PixelDensity(Dist,
-                        cctvs[i].WD,
-                        cctvs[i].HE,
-                        cctvs[i].Focal_Length,
-                        cctvs[i].imW,
-                        cctvs[i].imH);
+                    //ped init
+                    foreach(Pedestrian ped in peds)
+                    {
+                        
+                        double minDist = 0.0;
+                        int idx_minDist = 0;
+                        double[] Dist_Map = new double[road.DST.GetLength(0)];
+                        
+                        Calc_Dist_and_get_MinDist(road.DST, ped.X, ped.Y, ref Dist_Map, ref minDist, ref idx_minDist);
+                        double dst_x = road.DST[idx_minDist, 0];
+                        double dst_y = road.DST[idx_minDist, 1];
+            
+                        //Console.WriteLine("\n============================================================\n");
+                        //Console.WriteLine("{0}번째 보행자 -  {1}번째 목적지(좌표: {2}, {3}) ",
+                        //   Array.IndexOf(peds, ped)+1, idx_minDist, dst_x, dst_y);
 
-                    cctvs[i].get_V_FOV(Dist, cctvs[i].HE, cctvs[i].Focal_Length, cctvs[i].ViewAngleV, cctvs[i].X, cctvs[i].Y);
-                    cctvs[i].get_H_FOV(Dist, cctvs[i].WD, cctvs[i].Focal_Length, cctvs[i].ViewAngleH, cctvs[i].X, cctvs[i].Y);
-                    //cctvs[i].printCCTVInfo();
+
+                        // 보행자~목적지 벡터
+                        /*
+                        double[] A = new double[2];
+                        A[0] = dst_x - ped.X;
+                        A[1] = dst_y - ped.Y;        
+
+                        double[] B = { 0.001, 0 };
+                        double direction = Math.Round(Math.Acos(InnerProduct(A, B) / (Norm(A) * Norm(B))),8);
+                        if(ped.Y > dst_y)
+                        {
+                            direction = Math.Round(2 * Math.PI - direction, 8); 
+                        }
+                        */           
+                        ped.define_PED(Ped_Width, Ped_Height, dst_x, dst_y, Ped_Velocity);
+                        ped.setDirection();
+                        ped.TTL = (int)Math.Ceiling((minDist / ped.Velocity) / aUnitTime);
+                        ped.printPedInfo();
+                    }
+                    // cctv init
+                    for (int i = 0; i < N_CCTV; i++)
+                    {
+                        // 220317
+                        // Height.Max() 는 고정값 (=대충 10000)..
+                        // 상수로 바꿔도 될듯??
+                        // default Z는 3000
+                        // 3000 ~ 10000 사이 값, 즉 7000이 변하는 값
+                        // default(min) : 3000, variant : 7000 
+                        // maxZ = min + variant 이런식으로?..
+
+                        // cctvs[i].Z =
+                        //     (int)Math.Ceiling(rand.NextDouble() * (Height.Max() - 3000)) + 3000; // milimeter
+                        cctvs[i].setZ((int)Math.Ceiling(rand.NextDouble() * (Height.Max() - 3000)) + 3000);
+                        cctvs[i].WD = WD;
+                        cctvs[i].HE = HE;
+                        cctvs[i].imW = (int)imW;
+                        cctvs[i].imH = (int)imH;
+                        cctvs[i].Focal_Length = Lens_FocalLength;
+                        // 220104 초기 각도 설정
+                        // cctvs[i].ViewAngleH = rand.NextDouble() * 360;
+                        // cctvs[i].ViewAngleV = -35 - 20 * rand.NextDouble();
+                        cctvs[i].setViewAngleH(rand.NextDouble() * 360);
+                        cctvs[i].setViewAngleV(-35 - 20 * rand.NextDouble());
+                        
+                        cctvs[i].setFixMode(true); // default
+
+                        cctvs[i].H_AOV = 2 * Math.Atan(WD / (2 * Lens_FocalLength));
+                        cctvs[i].V_AOV = 2 * Math.Atan(WD / (2 * Lens_FocalLength));
+
+                        // 기기 성능상의 최대 감시거리 (임시값)
+                        cctvs[i].Max_Dist = 50 * 100 * 10; // 50m (milimeter)
+
+                        // Line 118~146
+                        /*  여기부턴 Road_Builder 관련 정보가 없으면 의미가 없을거같아서 주석처리했어용..
+                            그리고 get_Sectoral_Coverage 이런함수도 지금은 구현해야할지 애매해서..?
+                        */
+
+                        cctvs[i]
+                            .get_PixelDensity(Dist,
+                            cctvs[i].WD,
+                            cctvs[i].HE,
+                            cctvs[i].Focal_Length,
+                            cctvs[i].imW,
+                            cctvs[i].imH);
+
+                        cctvs[i].get_V_FOV(Dist, cctvs[i].HE, cctvs[i].Focal_Length, cctvs[i].ViewAngleV, cctvs[i].X, cctvs[i].Y);
+                        cctvs[i].get_H_FOV(Dist, cctvs[i].WD, cctvs[i].Focal_Length, cctvs[i].ViewAngleH, cctvs[i].X, cctvs[i].Y);
+                        cctvs[i].printCCTVInfo();
+                    }
                 }
-            }
-            /* -------------------------------------------
-            *  도로 정보 생성 + 보행자/CCTV 초기화 끝
-            ------------------------------------------- */
+                /* -------------------------------------------
+                *  도로 정보 생성 + 보행자/CCTV 초기화 끝
+                ------------------------------------------- */
 
-            double Sim_Time = 60;
-            double Now = 0;
+                double Sim_Time = 60;
+                double Now = 0;
 
-            // Console.WriteLine(">>> Simulating . . . \n");
-            int[] R_Surv_Time = new int[N_Ped]; // 탐지 
-            int[] directionError = new int[N_Ped]; // 방향 미스
-            int[] outOfRange = new int[N_Ped]; // 거리 범위 밖
+                // Console.WriteLine(">>> Simulating . . . \n");
+                int[] R_Surv_Time = new int[N_Ped]; // 탐지 
+                int[] directionError = new int[N_Ped]; // 방향 미스
+                int[] outOfRange = new int[N_Ped]; // 거리 범위 밖
 
-            string[] traffic_x = new string[(int)(Sim_Time / aUnitTime)]; // csv 파일 출력 위한 보행자별 x좌표
-            string[] traffic_y = new string[(int)(Sim_Time / aUnitTime)]; // csv 파일 출력 위한 보행자별 y좌표
-            string[] detection = new string[(int)(Sim_Time / aUnitTime)]; // csv 파일 출력 위한 추적여부
-            string header = "";
+                string[] traffic_x = new string[(int)(Sim_Time / aUnitTime)]; // csv 파일 출력 위한 보행자별 x좌표
+                string[] traffic_y = new string[(int)(Sim_Time / aUnitTime)]; // csv 파일 출력 위한 보행자별 y좌표
+                string[] detection = new string[(int)(Sim_Time / aUnitTime)]; // csv 파일 출력 위한 추적여부
+                string header = "";
 
-            int road_min = -Road_Interval / 2;
-            int road_max = (Road_Interval + Road_Width) * 2 + Road_Interval / 2;
+                int road_min = -Road_Interval / 2;
+                int road_max = (Road_Interval + Road_Width) * 2 + Road_Interval / 2;
 
-            // Console.WriteLine("simulatioin start: ");
-            // simulation
-            while (Now < Sim_Time)
-            {
-                //Console.WriteLine(".");
-                // 추적 검사
-                int[] res = checkDetection(N_CCTV, N_Ped);
-                // threading.. error
-                // int[] res = new int[N_Ped];
-
-                // Thread ThreadForWork = new Thread( () => { res = checkDetection(N_CCTV, N_Ped); });     
-                // ThreadForWork.Start();
-                
-                for(int i = 0; i < res.Length; i++)
+                // Console.WriteLine("simulatioin start: ");
+                // simulation
+                while (Now < Sim_Time)
                 {
-                    detection[i] += Convert.ToString(res[i]) + ",";
+                    //Console.WriteLine(".");
+                    // 추적 검사
+                    int[] res = checkDetection(N_CCTV, N_Ped);
+                    // threading.. error
+                    // int[] res = new int[N_Ped];
 
-                    if (res[i] == 0) outOfRange[i]++;
-                    else if (res[i] == -1) directionError[i]++;
-                    else if (res[i] == 1) R_Surv_Time[i]++;
+                    // Thread ThreadForWork = new Thread( () => { res = checkDetection(N_CCTV, N_Ped); });     
+                    // ThreadForWork.Start();
+                    
+                    for(int i = 0; i < res.Length; i++)
+                    {
+                        detection[i] += Convert.ToString(res[i]) + ",";
+
+                        if (res[i] == 0) outOfRange[i]++;
+                        else if (res[i] == -1) directionError[i]++;
+                        else if (res[i] == 1) R_Surv_Time[i]++;
+                    }
+
+                    // 이동
+                    for (int i = 0; i < peds.Length; i++)
+                    {
+                        if(peds[i].X< road_min || peds[i].X > road_max)
+                        {
+                            traffic_x[i] += "Out of range,";
+                        }
+                        else
+                        {
+                            traffic_x[i] += Math.Round(peds[i].X, 2) + ",";
+                        }
+
+                        if (peds[i].Y < road_min || peds[i].Y > road_max)
+                        {
+                            traffic_y[i] += "Out of range,";
+                        }
+                        else
+                        {
+                            traffic_y[i] += Math.Round(peds[i].Y, 2) + ",";
+                        }
+
+                        peds[i].move();
+                    }
+                  // 220317 cctv rotation
+                    for(int i = 0 ; i < N_CCTV; i++)
+                    {
+                        // 초당 회전속도 * unit time
+                        // 초당 회전속도가 10도일 경우,
+                        // unit time이 0.1 이면 while 루프 한번당 1도 씩 돌아야함.
+                        cctvs[i].rotateHorizon(cctv_rotate_speed_per_second * aUnitTime);
+                    }
+
+                    header += Convert.ToString(Math.Round(Now,1))+",";
+                    Now += aUnitTime;
                 }
+                stopwatch1.Stop();
 
-                // 이동
+                // // create .csv file
                 for (int i = 0; i < peds.Length; i++)
                 {
-                    if(peds[i].X< road_min || peds[i].X > road_max)
+                    string fileName = "ped"+i+".csv";
+                    using (System.IO.StreamWriter file = new System.IO.StreamWriter(@fileName))
                     {
-                        traffic_x[i] += "Out of range,";
+                        file.WriteLine(header);
+                        file.WriteLine(traffic_x[i]);
+                        file.WriteLine(traffic_y[i]);
+                        file.WriteLine(detection[i]);
                     }
-                    else
-                    {
-                        traffic_x[i] += Math.Round(peds[i].X, 2) + ",";
-                    }
-
-                    if (peds[i].Y < road_min || peds[i].Y > road_max)
-                    {
-                        traffic_y[i] += "Out of range,";
-                    }
-                    else
-                    {
-                        traffic_y[i] += Math.Round(peds[i].Y, 2) + ",";
-                    }
-
-                    peds[i].move();
-                }
-                // 220317 cctv rotation
-                for(int i = 0 ; i < N_CCTV; i++)
-                {
-                  // 초당 회전속도 * unit time
-                  // 초당 회전속도가 10도일 경우,
-                  // unit time이 0.1 이면 while 루프 한번당 1도 씩 돌아야함.
-                  cctvs[i].rotateHorizon(cctv_rotate_speed_per_second * aUnitTime);
                 }
 
-                header += Convert.ToString(Math.Round(Now,1))+",";
-                Now += aUnitTime;
+                // 결과
+                Console.WriteLine("Execution time : {0}", stopwatch1.ElapsedMilliseconds + "ms");
+                accTime += stopwatch1.ElapsedMilliseconds;
             }
-            stopwatch1.Stop();
-
-            // // create .csv file
-            // for (int i = 0; i < peds.Length; i++)
-            // {
-            //     string fileName = "ped"+i+".csv";
-            //     using (System.IO.StreamWriter file = new System.IO.StreamWriter(@fileName))
-            //     {
-            //         file.WriteLine(header);
-            //         file.WriteLine(traffic_x[i]);
-            //         file.WriteLine(traffic_y[i]);
-            //         file.WriteLine(detection[i]);
-            //     }
-            // }
-
-            // 결과
-            // Console.WriteLine("Execution time : {0}", stopwatch.ElapsedMilliseconds + "ms");
-          accTime += stopwatch1.ElapsedMilliseconds;
-          }
-          Console.WriteLine("\n============ RESULT ============");
-          Console.WriteLine("CCTV: {0}, Ped: {1}", N_CCTV, N_Ped);
-          Console.WriteLine("Execution time : {0}\n", (accTime/ 3.0 / 1000.0 ) + " sec");
+            Console.WriteLine("\n============ RESULT ============");
+            Console.WriteLine("CCTV: {0}, Ped: {1}", N_CCTV, N_Ped);
+            Console.WriteLine("Execution time : {0}\n", (accTime/ 3.0 / 1000.0 ) + " sec");
         }
 
     }

@@ -177,7 +177,7 @@ namespace surveillance_system
                 DST_X = rand.Next(0, road.size);
                 DST_Y = rand.Next(0, road.size);
             }
-           public void walk()
+            public void walk()
             {
 
             }
