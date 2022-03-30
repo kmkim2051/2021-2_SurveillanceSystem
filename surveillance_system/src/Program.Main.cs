@@ -256,9 +256,9 @@ namespace surveillance_system
             }
             // time check start
             double accTime = 0.0;
+
             const int N_CCTV = 100;
             const int N_Ped = 200;
-
 
             for(int rep = 0 ; rep < 3 ; rep++) {
               Stopwatch stopwatch1 = new Stopwatch();
@@ -273,13 +273,6 @@ namespace surveillance_system
             // int[] X = new int[100000];
             // double[] H_FOV_ = new double[100000];
             // double[] V_FOV_ = new double[100000];
-
-            // for (int i = 0; i < 100000; i++)
-            // {
-            //     X[i] = i + 1;
-            //     H_FOV_[i] = X[i] * WD / Lens_FocalLength;
-            //     V_FOV_[i] = X[i] * HE / Lens_FocalLength;
-            // }
 
             double[] Dist = new double[10000];
             double[] Height = new double[10000];
@@ -410,8 +403,10 @@ namespace surveillance_system
                         cctvs[i].Focal_Length,
                         cctvs[i].imW,
                         cctvs[i].imH);
+
                     cctvs[i].get_V_FOV(Dist, cctvs[i].HE, cctvs[i].Focal_Length, cctvs[i].ViewAngleV, cctvs[i].X, cctvs[i].Y);
                     cctvs[i].get_H_FOV(Dist, cctvs[i].WD, cctvs[i].Focal_Length, cctvs[i].ViewAngleH, cctvs[i].X, cctvs[i].Y);
+
                     //cctvs[i].printCCTVInfo();
                 }
             }
