@@ -270,17 +270,7 @@ namespace surveillance_system
 
             // double D_AOV = RadToDeg(2 * Math.Atan(Diag / (2 * Lens_FocalLength)));
             // (mm) distance
-            // int[] X = new int[100000];
-            // double[] H_FOV_ = new double[100000];
-            // double[] V_FOV_ = new double[100000];
-
-            // for (int i = 0; i < 100000; i++)
-            // {
-            //     X[i] = i + 1;
-            //     H_FOV_[i] = X[i] * WD / Lens_FocalLength;
-            //     V_FOV_[i] = X[i] * HE / Lens_FocalLength;
-            // }
-
+            
             double[] Dist = new double[10000];
             double[] Height = new double[10000];
             for (int i = 0; i < 10000; i++)
@@ -410,6 +400,7 @@ namespace surveillance_system
                         cctvs[i].Focal_Length,
                         cctvs[i].imW,
                         cctvs[i].imH);
+
                     cctvs[i].get_V_FOV(Dist, cctvs[i].HE, cctvs[i].Focal_Length, cctvs[i].ViewAngleV, cctvs[i].X, cctvs[i].Y);
                     cctvs[i].get_H_FOV(Dist, cctvs[i].WD, cctvs[i].Focal_Length, cctvs[i].ViewAngleH, cctvs[i].X, cctvs[i].Y);
                     //cctvs[i].printCCTVInfo();
