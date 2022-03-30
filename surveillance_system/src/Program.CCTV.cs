@@ -431,13 +431,13 @@ namespace surveillance_system
                 {
                     // 211126_2
                     V_FOV.Set_X012(V_FOV_X_temp.Angle_0[i], 
-                                   V_FOV_X_temp.Angle_1[i], 
-                                   V_FOV_X_temp.Angle_2[i], 
-                                   i);
+                                  V_FOV_X_temp.Angle_1[i], 
+                                  V_FOV_X_temp.Angle_2[i], 
+                                  i);
                     V_FOV.Set_Y012(V_FOV_Y_temp.Angle_0[i], 
-                                   V_FOV_Y_temp.Angle_1[i], 
-                                   V_FOV_Y_temp.Angle_2[i], 
-                                   i);                    
+                                  V_FOV_Y_temp.Angle_1[i], 
+                                  V_FOV_Y_temp.Angle_2[i], 
+                                  i);                    
                 }
             }
 
@@ -510,21 +510,21 @@ namespace surveillance_system
 
             public void printCCTVInfo()
             {
-                // Console
-                //     .WriteLine("======================Info======================");
-                // Console
-                //     .WriteLine("좌표 : ({0},{1},{2}) \n",
-                    // this.X,
-                    // this.Y,
-                    // this.Z);
+                Console
+                    .WriteLine("======================Info======================");
+                Console
+                    .WriteLine("좌표 : ({0},{1},{2}) \n",
+                    this.X,
+                    this.Y,
+                    this.Z);
 
                 //Console.WriteLine("카메라 센서(너비, 높이) : ({0},{1}) \n", this.WD, this.HE);
                 //Console.WriteLine("imH imW: {0}, {1} \n", this.imH, this.imW);
                 //Console.WriteLine("초점거리 : {0} \n", this.Focal_Length);
-                // Console
-                //     .WriteLine("ViewAngleH : {0}  ViewAngleV: {1}  \n",
-                //     this.ViewAngleH,
-                //     this.ViewAngleV);
+                Console
+                    .WriteLine("ViewAngleH : {0}  ViewAngleV: {1}  \n",
+                    this.ViewAngleH,
+                    this.ViewAngleV);
                 //Console.WriteLine("H_AOV : {0}   V_AOV : {1} \n",  this.H_AOV, this.V_AOV);
             }
         }

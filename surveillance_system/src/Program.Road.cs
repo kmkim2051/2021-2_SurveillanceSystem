@@ -126,24 +126,22 @@ namespace surveillance_system
                     }
                 }
             }
-
+            
             public void printRoadInfo()
             {
-                // Console.WriteLine("\n======================== DST ===============================================");
+                Console.WriteLine("\n======================== DST ===============================================");
                 for (int i = 0; i < DST.GetLength(0); i++)
                 {
-                    // for time check
-                    // for (int j = 0; j < 2; j++)
-                    // {
-                    //     if (j == 0) Console.Write("DST[{0}].X = {1}      ", i, DST[i, j]);
-                    //     if (j == 1) Console.Write("DST[{0}].Y = {1}      ", i, DST[i, j]);
-                    // }
-                    // Console.WriteLine();
+                    for (int j = 0; j < 2; j++)
+                    {
+                        if (j == 0) Console.Write("DST[{0}].X = {1}      ", i, DST[i, j]);
+                        if (j == 1) Console.Write("DST[{0}].Y = {1}      ", i, DST[i, j]);
+                    }
+                    Console.WriteLine();
                 }
-                // Console.WriteLine("\n===========================================================================\n");
+                Console.WriteLine("\n===========================================================================\n");
 
                 /* -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
                    Console.WriteLine("\n========================lane Vector========================================");
                    for (int i = 0; i < laneVector.Length; i++)
                    {
@@ -151,28 +149,27 @@ namespace surveillance_system
                        if (i % 99 == 0) Console.WriteLine();
                    }
                    Console.WriteLine("\n===========================================================================\n");
-
                 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-                //for time check
-                // Console.WriteLine("\n========================lane horizontal======================================");
-                // for (int i = 0; i < lane_h.GetLength(0); i++)
-                // {
-                //     Console.WriteLine("\n{0}번째 가로 도로 정보", i);
-                //     Console.WriteLine("y좌표 : 위 - 중앙 - 아래");
-                //     Console.WriteLine("       {0}   {1}   {2}", lane_h_upper[i,0],lane_h[i,0],lane_h_lower[i,0]);
-                // }
-                // Console.WriteLine("\n===========================================================================\n");
+
+                Console.WriteLine("\n========================lane horizontal======================================");
+                for (int i = 0; i < lane_h.GetLength(0); i++)
+                {
+                    Console.WriteLine("\n{0}번째 가로 도로 정보", i);
+                    Console.WriteLine("y좌표 : 위 - 중앙 - 아래");
+                    Console.WriteLine("       {0}   {1}   {2}", lane_h_upper[i,0],lane_h[i,0],lane_h_lower[i,0]);
+                }
+                Console.WriteLine("\n===========================================================================\n");
 
                 
 
-                // Console.WriteLine("\n========================lane vertical========================================");
-                // for (int i = 0; i < lane_h.GetLength(0); i++)
-                // {
-                //     Console.WriteLine("\n{0}번째 세로 도로 정보", i);
-                //     Console.WriteLine("x좌표 : 왼쪽 - 중앙 - 오른쪽");
-                //     Console.WriteLine("       {0}   {1}   {2}", lane_v_left[i, 0], lane_v[i, 0], lane_v_right[i, 0]);
-                // }
-                // Console.WriteLine("\n===========================================================================\n");
+                Console.WriteLine("\n========================lane vertical========================================");
+                for (int i = 0; i < lane_h.GetLength(0); i++)
+                {
+                    Console.WriteLine("\n{0}번째 세로 도로 정보", i);
+                    Console.WriteLine("x좌표 : 왼쪽 - 중앙 - 오른쪽");
+                    Console.WriteLine("       {0}   {1}   {2}", lane_v_left[i, 0], lane_v[i, 0], lane_v_right[i, 0]);
+                }
+                Console.WriteLine("\n===========================================================================\n");
             }
         }
     }
