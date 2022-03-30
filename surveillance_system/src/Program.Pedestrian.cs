@@ -165,10 +165,9 @@ namespace surveillance_system
             }
             public  void  updateDestination()
             {
-                // To-do: 인도 이내로 잡기 
-                Random rand = new Random();
-                DST_X = rand.Next(0, road.size);
-                DST_Y = rand.Next(0, road.size);
+                double[,] newPos = road.getPointOfAdjacentRoad(road.getIdxOfIntersection(X, Y));
+                DST_X = newPos[0, 0];
+                DST_Y = newPos[0, 1];
             }
            public void walk()
             {
