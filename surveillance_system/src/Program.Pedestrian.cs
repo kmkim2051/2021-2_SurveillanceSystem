@@ -26,6 +26,7 @@ namespace surveillance_system
 
             public double MAX_Dist_Y;
 
+            public double ground; // Z ?
             /* ==================================
             /   추가
             /   line 67~ 87 변수 
@@ -141,17 +142,17 @@ namespace surveillance_system
 
             public void printPedInfo()
             {
-                Console.WriteLine("======================Info======================");
-                Console.WriteLine("출발지 : ({0},{1}) \n", this.X, this.Y);
-                Console.WriteLine("목적지 : ({0},{1}) \n", this.DST_X, this.DST_Y);
-                Console.WriteLine("방향 각도(라디안) : {0} \n", this.Direction);
-                Console.WriteLine("속도 : {0} \n", this.Velocity);
-                Console.WriteLine("단위이동거리 : {0} \n", this.Unit_Travel_Dist);
-                Console.WriteLine("Pos_H1 : ({0},{1})   Pos_H2 : ({2},{3})  \n", 
-                    this.Pos_H1[0], this.Pos_H1[1], this.Pos_H2[0], this.Pos_H2[1]);
-                Console.WriteLine("Pos_V1 : ({0},{1})   Pos_V2 : ({2},{3}) \n",
-                    this.Pos_V1[0], this.Pos_V1[1], this.Pos_V2[0], this.Pos_V2[1]);
-                Console.WriteLine("TTL : {0} \n", this.TTL);
+                // Console.WriteLine("======================Info======================");
+                // Console.WriteLine("출발지 : ({0},{1}) \n", this.X, this.Y);
+                // Console.WriteLine("목적지 : ({0},{1}) \n", this.DST_X, this.DST_Y);
+                // Console.WriteLine("방향 각도(라디안) : {0} \n", this.Direction);
+                // Console.WriteLine("속도 : {0} \n", this.Velocity);
+                // Console.WriteLine("단위이동거리 : {0} \n", this.Unit_Travel_Dist);
+                // Console.WriteLine("Pos_H1 : ({0},{1})   Pos_H2 : ({2},{3})  \n", 
+                //     this.Pos_H1[0], this.Pos_H1[1], this.Pos_H2[0], this.Pos_H2[1]);
+                // Console.WriteLine("Pos_V1 : ({0},{1})   Pos_V2 : ({2},{3}) \n",
+                //     this.Pos_V1[0], this.Pos_V1[1], this.Pos_V2[0], this.Pos_V2[1]);
+                // Console.WriteLine("TTL : {0} \n", this.TTL);
             }
         }
     }
