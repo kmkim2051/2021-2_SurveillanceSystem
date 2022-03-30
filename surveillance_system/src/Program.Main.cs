@@ -270,7 +270,6 @@ namespace surveillance_system
 
             // double D_AOV = RadToDeg(2 * Math.Atan(Diag / (2 * Lens_FocalLength)));
             // (mm) distance
-            
             double[] Dist = new double[10000];
             double[] Height = new double[10000];
             for (int i = 0; i < 10000; i++)
