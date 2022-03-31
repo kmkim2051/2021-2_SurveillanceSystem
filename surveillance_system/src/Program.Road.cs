@@ -27,12 +27,14 @@ namespace surveillance_system
             public double[,] intersectionArea; // 도로 교차구간
             public int size;
             public int n_interval;
+            public int width;
 
             public void roadBuilder(int wd, int intvl, int n_interval, int n_cctv, int n_ped)
             {
                 DST = new double[n_interval * n_interval, 2];
                 intersectionArea = new double[n_interval * n_interval, 4];
                 this.n_interval = n_interval;
+                this.width = wd;
                 // 교차점, 교차구간 설정
                 int idx = 0;
                 for (int i = 0; i < n_interval; i++)
@@ -142,23 +144,26 @@ namespace surveillance_system
                     return new double[,] { { 0, 0 } };
                 }
 
-                int i = currAreaIdx / n_interval;
-                int j = currAreaIdx % n_interval;
+                int i, j;
                 Random rand = new Random();
 
                 do
                 {
+                    i = currAreaIdx / n_interval;
+                    j = currAreaIdx % n_interval;
+
                     int opt = rand.Next(0, 4);
                     if (opt == 0) j += 1; // up
                     else if(opt == 1) j -= 1; // down
                     else if (opt == 2)  i -= 1; // left
                     else if(opt == 3) i += 1; // right
-                } while ((i >= 0 && i < n_interval) && (j >= 0 && j < n_interval));
+
+                } while (i< 0 || i >= n_interval || j < 0|| j >= n_interval);
 
                 int idx = n_interval * i + j;
                 double[,] newPos = new double[1, 2];
-                newPos[0,0] = DST[idx, 0] + rand.Next(-n_interval, n_interval) * rand.NextDouble();
-                newPos[0,1] = DST[idx, 1] + rand.Next(-n_interval, n_interval) * rand.NextDouble();
+                newPos[0,0] = DST[idx, 0] + rand.Next(-width, width) * rand.NextDouble();
+                newPos[0,1] = DST[idx, 1] + rand.Next(-width, width) * rand.NextDouble();
 
                 return newPos;
             }

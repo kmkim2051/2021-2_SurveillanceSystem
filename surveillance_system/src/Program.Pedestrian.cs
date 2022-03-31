@@ -160,7 +160,7 @@ namespace surveillance_system
                 if (isArrived())
                 {
                     // Index out of range
-                    // updateDestination(); 
+                    updateDestination(); 
                     setDirection();
                 }
             }
