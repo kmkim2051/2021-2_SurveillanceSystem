@@ -2,8 +2,8 @@
 using System.Runtime.CompilerServices;
 using System;
 using System.Linq;
-using System.Diagnostics;
 using System.Threading;
+using System.Diagnostics;
 
 namespace surveillance_system
 {
@@ -507,10 +507,15 @@ namespace surveillance_system
             double totalSimCount = Sim_Time / aUnitTime * N_Ped;
 
             // 결과(탐지율)
-            Console.WriteLine("====== Surveillance Time ======");
-            Console.WriteLine("Out of Range: {0:F2}% ({1}/{2})", 100*outOfRange.Sum()/totalSimCount, outOfRange.Sum(), totalSimCount);
-            Console.WriteLine("Direction Error: {0:F2}% ({1}/{2})", 100*directionError.Sum()/totalSimCount, directionError.Sum(), totalSimCount);
-            Console.WriteLine("Surveillance Time: {0:F2}% ({1}/{2})", 100*R_Surv_Time.Sum()/totalSimCount, R_Surv_Time.Sum(), totalSimCount);
+            Console.WriteLine("====== Surveillance Time Result ======");
+            Console.WriteLine("N_CCTV: {0}, N_Ped: {1}", N_CCTV, N_Ped);
+            Console.WriteLine("[Result]");
+            Console.WriteLine("  - Execution time : {0}", stopwatch.ElapsedMilliseconds + "ms");
+            Console.WriteLine("[Fail]");
+            Console.WriteLine("  - Out of Range: {0:F2}% ({1}/{2})", 100*outOfRange.Sum()/totalSimCount, outOfRange.Sum(), totalSimCount);
+            Console.WriteLine("  - Direction Error: {0:F2}% ({1}/{2})", 100*directionError.Sum()/totalSimCount, directionError.Sum(), totalSimCount);
+            Console.WriteLine("[Success]");
+            Console.WriteLine("  - Surveillance Time: {0:F2}% ({1}/{2})\n", 100*R_Surv_Time.Sum()/totalSimCount, R_Surv_Time.Sum(), totalSimCount);
 
             // 결과(시간)
             // Console.WriteLine("Execution time : {0}", stopwatch.ElapsedMilliseconds + "ms");
