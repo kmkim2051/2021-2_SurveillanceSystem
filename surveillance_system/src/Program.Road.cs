@@ -42,7 +42,7 @@ namespace surveillance_system
                         DST[idx, 0] = (intvl + wd) * i;
                         DST[idx, 1] = (intvl + wd) * j;
 
-                        intersectionArea[idx, 0] = DST[idx, 0] -( wd / 2); // x_min
+                        intersectionArea[idx, 0] = DST[idx, 0] - (wd / 2); // x_min
                         intersectionArea[idx, 1] = DST[idx, 0] + (wd / 2); // x_max
                         intersectionArea[idx, 2] = DST[idx, 1] - (wd / 2); // y_min
                         intersectionArea[idx, 3] = DST[idx, 1] + (wd / 2); // y_max
@@ -85,7 +85,7 @@ namespace surveillance_system
                     lane_v_right[i, 0] = lane_h[i, 0] + wd / 2;
                 }
 
-                setCCTV(n_cctv,wd, n_interval);
+                setCCTV(n_cctv, wd, n_interval);
                 setPed(n_ped);
             }
 

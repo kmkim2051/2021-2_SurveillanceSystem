@@ -384,7 +384,7 @@ namespace surveillance_system
                     cctvs[i].setViewAngleH(rand.NextDouble() * 360);
                     cctvs[i].setViewAngleV(-35 - 20 * rand.NextDouble());
                     
-                    cctvs[i].setFixMode(true); // default
+                    cctvs[i].setFixMode(true); // default (rotate)
 
                     cctvs[i].H_AOV = 2 * Math.Atan(WD / (2 * Lens_FocalLength));
                     cctvs[i].V_AOV = 2 * Math.Atan(HE / (2 * Lens_FocalLength));
