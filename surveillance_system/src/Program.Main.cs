@@ -233,7 +233,7 @@ namespace surveillance_system
             const double imW = 1920; // (pixels) image width
             const double imH = 1080; // (pixels) image height
 
-            const double cctv_rotate_speed_per_second = 12; // 30초에 한바퀴
+            const double cctv_rotate_degree = 90; // 30초에 한바퀴
             // Installation [line_23]
             const double Angle_H = 0; // pi/2, (deg), Viewing Angle (Horizontal Aspects)
             const double Angle_V = 0; // pi/2, (deg), Viewing Angle (Vertical Aspects)
@@ -241,7 +241,7 @@ namespace surveillance_system
             // configuration: road
             const int Road_WD = 5000; // 이거 안쓰는 변수? Road_Width 존재
             bool On_Road_Builder = true; // 0:No road, 1:Grid
-
+          
             int Road_Width = 0;
             int Road_Interval = 0;
             int Road_N_Interval = 0;
@@ -266,6 +266,8 @@ namespace surveillance_system
 
             // ped csv file 출력 여부
             bool createPedCSV = false;
+
+            double rotateTerm = 30.0; // sec
 
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
@@ -455,7 +457,7 @@ namespace surveillance_system
                 // 이동
                 for (int i = 0; i < peds.Length; i++)
                 {
-                    if(peds[i].X< road_min || peds[i].X > road_max)
+                    if(peds[i].X < road_min || peds[i].X > road_max)
                     {
                         traffic_x[i] += "Out of range,";
                     }
@@ -478,10 +480,19 @@ namespace surveillance_system
                 // 220317 cctv rotation
                 for(int i = 0 ; i < N_CCTV; i++)
                 {
-                    // 초당 회전속도 * unit time
-                    // 초당 회전속도가 10도일 경우,
-                    // unit time이 0.1 이면 while 루프 한번당 1도 씩 돌아야함.
-                    cctvs[i].rotateHorizon(cctv_rotate_speed_per_second * aUnitTime);
+                    // 220331 rotate 후 fov 재계산
+                    // 30초마다 한바퀴 돌도록 -> 7.5초마다 90도
+                    // Now는 현재 simulation 수행 경과 시간
+                    // 360/cctv_rotate_degree = 4
+                    // 30/4 = 7.5
+                    if (Math.Round(Now, 2) % Math.Round(rotateTerm/(360.0/cctv_rotate_degree), 2) == 0) 
+                    {
+                      // cctv.setFixMode(false)로 설정해줘야함!
+                      // Console.WriteLine("[Rotate] Now: {0}, Degree: {1}", Math.Round(Now, 2), cctvs[i].ViewAngleH);
+                      cctvs[i].rotateHorizon(cctv_rotate_degree); // 90
+                      // 회전후 수평 FOV update (지금은 전부 Update -> 시간 오래걸림 -> 일부만(일부FOV구성좌표만)해야할듯)
+                      cctvs[i].get_H_FOV(Dist, cctvs[i].WD, cctvs[i].Focal_Length, cctvs[i].ViewAngleH, cctvs[i].X, cctvs[i].Y);
+                    }
                 }
 
                 header += Convert.ToString(Math.Round(Now,1))+",";
