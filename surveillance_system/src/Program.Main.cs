@@ -1,7 +1,9 @@
-﻿using System.Runtime.CompilerServices;
+﻿// using Internal;
+using System.Runtime.CompilerServices;
 using System;
 using System.Linq;
 using System.Diagnostics;
+using System.Threading;
 
 namespace surveillance_system
 {
@@ -146,9 +148,11 @@ namespace surveillance_system
                     else // cctv[i]가 보행자[j]를 h or v 탐지 실패 여부 추가
                     {
                         cctv_missing_cnt[i]++;
-                      if(h_detected == 0) 
+                        
+                        if(h_detected == 0) 
                         missed_map_h[i, j] = 1;
-                      if(v_detected == 0) 
+
+                        if(v_detected == 0) 
                         missed_map_v[i, j] = 1;
 
                         returnArr[j] = (returnArr[j] == 1 ? 1 : -1);
@@ -162,8 +166,8 @@ namespace surveillance_system
             for(int i = 0 ; i < N_CCTV; i++)
             for(int j = 0 ; j < N_Ped; j++)
             {
-              cctv_missing_count_h[i] += missed_map_h[i, j];
-              cctv_missing_count_v[i] += missed_map_v[i, j];
+                cctv_missing_count_h[i] += missed_map_h[i, j];
+                cctv_missing_count_v[i] += missed_map_v[i, j];
             }
             // 보행자를 탐지한 cctv 수
             int[] detecting_cctv_cnt = new int[N_Ped];
@@ -172,7 +176,6 @@ namespace surveillance_system
 
             //Console.WriteLine("=== 성공 ====");
             // detection 결과 출력 
-             
             for (int i = 0; i < N_CCTV; i++)
             {
                 for (int j = 0; j < N_Ped; j++)
@@ -183,32 +186,30 @@ namespace surveillance_system
                     }
                     else
                     {
-                      missing_cctv_cnt[j]++;
+                        missing_cctv_cnt[j]++;
                     }
                 }
             }
 
-
-            Console.WriteLine("---------------------------------");
-            Console.WriteLine("   성공  ||   실패  ");
-            for (int i = 0; i < N_Ped; i++)
-            {
-                if (detecting_cctv_cnt[i] == 0)
-                {
-                    Console.WriteLine("         ||   ped{0} ", i + 1);
-                }
-                else
-                {
-                    Console.WriteLine("ped{0} ", i + 1);
-                }
-            }
-            Console.WriteLine("---------------------------------");
+// for time check
+            // Console.WriteLine("---------------------------------");
+            // Console.WriteLine("   성공  ||   실패  ");
+            // for (int i = 0; i < N_Ped; i++)
+            // {
+            //     if (detecting_cctv_cnt[i] == 0)
+            //     {
+            //         Console.WriteLine("         ||   ped{0} ", i + 1);
+            //     }
+            //     else
+            //     {
+            //         Console.WriteLine("ped{0} ", i + 1);
+            //     }
+            // }
+            // Console.WriteLine("---------------------------------");
 
 
             return returnArr;
         }
-
-        
         
         static void Main(string[] args)
         {
@@ -226,6 +227,7 @@ namespace surveillance_system
             const double imW = 1920; // (pixels) image width
             const double imH = 1080; // (pixels) image height
 
+            const double cctv_rotate_speed_per_second = 12; // 30초에 한바퀴
             // Installation [line_23]
             const double Angle_H = 0; // pi/2, (deg), Viewing Angle (Horizontal Aspects)
             const double Angle_V = 0; // pi/2, (deg), Viewing Angle (Vertical Aspects)
@@ -251,6 +253,16 @@ namespace surveillance_system
             {
                 log_PED_position = new int[5];
             }
+            // time check start
+            double accTime = 0.0;
+            const int N_CCTV = 36;
+            const int N_Ped = 10;
+
+            // ped csv file 출력 여부
+            bool createPedCSV = false;
+
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
 
             // Step 1-2) calculate vertical/horizontal AOV
             double H_AOV = RadToDeg(2 * Math.Atan(WD / (2 * Lens_FocalLength))); // Horizontal AOV
@@ -258,18 +270,6 @@ namespace surveillance_system
 
             // double D_AOV = RadToDeg(2 * Math.Atan(Diag / (2 * Lens_FocalLength)));
             // (mm) distance
-            int[] X = new int[100000];
-            double[] H_FOV_ = new double[100000];
-            double[] V_FOV_ = new double[100000];
-
-            for (int i = 0; i < 100000; i++)
-            {
-                X[i] = i + 1;
-                H_FOV_[i] = X[i] * WD / Lens_FocalLength;
-                V_FOV_[i] = X[i] * HE / Lens_FocalLength;
-            }
-
-            const int N_CCTV = 36;
             double[] Dist = new double[10000];
             double[] Height = new double[10000];
             for (int i = 0; i < 10000; i++)
@@ -279,7 +279,6 @@ namespace surveillance_system
             }
 
             // Configuration: Pedestrian (Target Object)
-            const int N_Ped = 10;
             const int Ped_Width = 900; // (mm)
             const int Ped_Height = 1700; // (mm)
             const int Ped_Velocity = 1500; // (mm/s)
@@ -297,15 +296,18 @@ namespace surveillance_system
 
 
             /* -------------------------------------------
-             *  도로 정보 생성 + 보행자/CCTV 초기화 시작
+            *  도로 정보 생성 + 보행자/CCTV 초기화 시작
             ------------------------------------------- */
+            // time check
+
+
             if (On_Road_Builder)
             {
                 road.roadBuilder(Road_Width, Road_Interval, Road_N_Interval, N_CCTV, N_Ped); // 도로 정보 생성
                 road.printRoadInfo();
 
                 /*
-                 *  보행자, cctv 초기 설정
+                *  보행자, cctv 초기 설정
                 for (int i = 0; i < N_Ped; i++)
                 {
                     Console.WriteLine("{0}번째 보행자 = ({1}, {2}) ", i + 1, peds[i].X, peds[i].Y);
@@ -352,29 +354,35 @@ namespace surveillance_system
                     ped.TTL = (int)Math.Ceiling((minDist / ped.Velocity) / aUnitTime);
                     ped.printPedInfo();
                 }
-
-
-                Console.WriteLine("\n============================================================\n\n\n");
-
                 // cctv init
                 for (int i = 0; i < N_CCTV; i++)
                 {
-                    cctvs[i].Z =
-                        (int)Math.Ceiling(rand.NextDouble() * (Height.Max() - 3000)) + 3000; // milimeter
+                    // 220317
+                    // Height.Max() 는 고정값 (=대충 10000)..
+                    // 상수로 바꿔도 될듯??
+                    // default Z는 3000
+                    // 3000 ~ 10000 사이 값, 즉 7000이 변하는 값
+                    // default(min) : 3000, variant : 7000 
+                    // maxZ = min + variant 이런식으로?..
+
+                    // cctvs[i].Z =
+                    //     (int)Math.Ceiling(rand.NextDouble() * (Height.Max() - 3000)) + 3000; // milimeter
+                    cctvs[i].setZ((int)Math.Ceiling(rand.NextDouble() * (Height.Max() - 3000)) + 3000);
                     cctvs[i].WD = WD;
                     cctvs[i].HE = HE;
                     cctvs[i].imW = (int)imW;
                     cctvs[i].imH = (int)imH;
                     cctvs[i].Focal_Length = Lens_FocalLength;
                     // 220104 초기 각도 설정
-                    cctvs[i].ViewAngleH = rand.NextDouble() * 360;
-                    cctvs[i].ViewAngleV = -35 - 20 * rand.NextDouble();
+                    // cctvs[i].ViewAngleH = rand.NextDouble() * 360;
+                    // cctvs[i].ViewAngleV = -35 - 20 * rand.NextDouble();
+                    cctvs[i].setViewAngleH(rand.NextDouble() * 360);
+                    cctvs[i].setViewAngleV(-35 - 20 * rand.NextDouble());
                     
-                    cctvs[i].isFixed = true; // default
-                    cctvs[i].setViewAngle(rand.NextDouble() * 360, -35 - 20 * rand.NextDouble());
+                    cctvs[i].setFixMode(true); // default
 
                     cctvs[i].H_AOV = 2 * Math.Atan(WD / (2 * Lens_FocalLength));
-                    cctvs[i].V_AOV = 2 * Math.Atan(WD / (2 * Lens_FocalLength));
+                    cctvs[i].V_AOV = 2 * Math.Atan(HE / (2 * Lens_FocalLength));
 
                     // 기기 성능상의 최대 감시거리 (임시값)
                     cctvs[i].Max_Dist = 50 * 100 * 10; // 50m (milimeter)
@@ -392,13 +400,9 @@ namespace surveillance_system
                         cctvs[i].imW,
                         cctvs[i].imH);
 
-                    foreach(CCTV cctv in cctvs)
-                    {
-                        cctv.get_V_FOV(Dist, cctv.HE, cctv.Focal_Length, cctv.ViewAngleV, cctv.X,cctv.Y);
-                        cctv.get_H_FOV(Dist, cctv.WD, cctv.Focal_Length, cctv.ViewAngleH, cctv.X, cctv.Y);
-                    }
-
-                    //cctvs[i].printCCTVInfo();
+                    cctvs[i].get_H_FOV(Dist, cctvs[i].WD, cctvs[i].Focal_Length, cctvs[i].ViewAngleH, cctvs[i].X, cctvs[i].Y);
+                    cctvs[i].get_V_FOV(Dist, cctvs[i].HE, cctvs[i].Focal_Length, cctvs[i].ViewAngleV, cctvs[i].X, cctvs[i].Z);
+                    cctvs[i].printCCTVInfo();
                 }
             }
             /* -------------------------------------------
@@ -408,7 +412,7 @@ namespace surveillance_system
             double Sim_Time = 60;
             double Now = 0;
 
-            Console.WriteLine(">>> Simulating . . . \n");
+            // Console.WriteLine(">>> Simulating . . . \n");
             int[] R_Surv_Time = new int[N_Ped]; // 탐지 
             int[] directionError = new int[N_Ped]; // 방향 미스
             int[] outOfRange = new int[N_Ped]; // 거리 범위 밖
@@ -421,14 +425,19 @@ namespace surveillance_system
             int road_min = -Road_Interval / 2;
             int road_max = (Road_Interval + Road_Width) * 2 + Road_Interval / 2;
 
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
+            // Console.WriteLine("simulatioin start: ");
             // simulation
             while (Now < Sim_Time)
             {
                 //Console.WriteLine(".");
                 // 추적 검사
                 int[] res = checkDetection(N_CCTV, N_Ped);
+                // threading.. error
+                // int[] res = new int[N_Ped];
+
+                // Thread ThreadForWork = new Thread( () => { res = checkDetection(N_CCTV, N_Ped); });     
+                // ThreadForWork.Start();
+                
                 for(int i = 0; i < res.Length; i++)
                 {
                     detection[i] += Convert.ToString(res[i]) + ",";
@@ -461,38 +470,42 @@ namespace surveillance_system
 
                     peds[i].move();
                 }
+                // 220317 cctv rotation
+                for(int i = 0 ; i < N_CCTV; i++)
+                {
+                    // 초당 회전속도 * unit time
+                    // 초당 회전속도가 10도일 경우,
+                    // unit time이 0.1 이면 while 루프 한번당 1도 씩 돌아야함.
+                    cctvs[i].rotateHorizon(cctv_rotate_speed_per_second * aUnitTime);
+                }
 
                 header += Convert.ToString(Math.Round(Now,1))+",";
                 Now += aUnitTime;
             }
             stopwatch.Stop();
 
-            // create .csv file
-            for (int i = 0; i < peds.Length; i++)
+            // // create .csv file
+            if (createPedCSV) 
             {
-                string fileName = "ped"+i+".csv";
-                using (System.IO.StreamWriter file = new System.IO.StreamWriter(@fileName))
+                for (int i = 0; i < peds.Length; i++)
                 {
-                    file.WriteLine(header);
-                    file.WriteLine(traffic_x[i]);
-                    file.WriteLine(traffic_y[i]);
-                    file.WriteLine(detection[i]);
+                    string fileName = "ped"+i+".csv";
+                    using (System.IO.StreamWriter file = new System.IO.StreamWriter(@fileName))
+                    {
+                        file.WriteLine(header);
+                        file.WriteLine(traffic_x[i]);
+                        file.WriteLine(traffic_y[i]);
+                        file.WriteLine(detection[i]);
+                    }
                 }
             }
-
             // 결과
-            Console.WriteLine("\n============ SIMULATION RESULT ============");
             Console.WriteLine("Execution time : {0}", stopwatch.ElapsedMilliseconds + "ms");
-            int sum = R_Surv_Time.Sum();
-            Console.WriteLine("Surv Time : {0} ", (double)sum / N_Ped);
-
-            sum = outOfRange.Sum();
-            Console.WriteLine("거리상 미탐지 : {0} ", (double)sum / N_Ped);
-
-            sum = directionError.Sum();
-            Console.WriteLine("방향 미스 : {0} ", (double)sum / N_Ped);
-
+            accTime += stopwatch.ElapsedMilliseconds;
+            
+            Console.WriteLine("\n============ RESULT ============");
+            Console.WriteLine("CCTV: {0}, Ped: {1}", N_CCTV, N_Ped);
+            Console.WriteLine("Execution time : {0}\n", (accTime / 1000.0 ) + " sec");
         }
-
     }
 }

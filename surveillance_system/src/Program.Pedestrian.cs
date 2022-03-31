@@ -20,6 +20,13 @@ namespace surveillance_system
             public double MAX_Dist_X;
             public double MAX_Dist_Y;
 
+            public double ground; // Z ?
+            /* ==================================
+            /   추가
+            /   line 67~ 87 변수 
+            /   line 91~127 define_PED 함수 (깃허브 define_PED.m)
+            /           라인 500~507에서 ped 위치 변수 사용하는데 이걸  define_PED에서 처리하는거 같아서 구현해놨습니다
+            / ===================================*/
             public double W;
             public double H;
             public double D1;
@@ -169,7 +176,7 @@ namespace surveillance_system
                 DST_X = newPos[0, 0];
                 DST_Y = newPos[0, 1];
             }
-           public void walk()
+            public void walk()
             {
 
             }

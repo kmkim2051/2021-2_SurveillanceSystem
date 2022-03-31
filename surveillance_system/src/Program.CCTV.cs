@@ -174,7 +174,7 @@ namespace surveillance_system
 
             public int Y;
 
-            public int Z;
+            public int Z = 3000;
 
             public double WD;
 
@@ -192,11 +192,12 @@ namespace surveillance_system
 
             public double ViewAngleH;
 
-            public double ViewAngleV;
+            public double ViewAngleV = -35;
 
             public double Eff_Dist_From;
             public double Eff_Dist_To;
 
+            // camera control
             public double Direction;
 
             public bool isFixed = false;
@@ -204,6 +205,8 @@ namespace surveillance_system
             // 최대거리
             public double Max_Dist;
 
+            // todo
+            // ground sample distance
 
             // new FOV class member
 
@@ -211,25 +214,43 @@ namespace surveillance_system
 
             public FOV V_FOV;
 
+            public void setZ(int z)
+            {
+              if (z >= 3000) // 3000: minimum z
+              {
+                Z = z;
+              }
+            }
+            public void setFixMode(bool mode)
+            {
+              isFixed = mode;
+              // debug
+              // Console.WriteLine("CCTV Rotation: " + isFixed.ToString());
+            }
             public void setViewAngleH(double angleH)
             {
+                // 양수 or 음수 예외처리x 에러 아니고 회전 방향 차이
                 ViewAngleH = angleH;
             }
-            public void setViewAngleV(double angleH)
+            public void setViewAngleV(double angleV)
             {
-                ViewAngleH = angleH;
+              // angleV default value is -35
+              if(angleV > -35 || angleV < -55)
+              {
+                // debug
+                Console.WriteLine("[Warning] Horizontal ViewAngle should be between -35 ~ -55");
+                return;
+              }
+              ViewAngleV = angleV;
             }
-            public void setViewAngle(double angleH, double angleV)
+            public void rotateHorizon(double rotationDegree)
             {
-              setViewAngleH(angleH);
-              setViewAngleV(angleV);
+              // horizontal rotation
+              if(!isFixed) {
+                setViewAngleH((ViewAngleH + rotationDegree) % 360);
+              }
             }
-            public void rotate_H(double angle=90)
-            {
-              // 기본 90도 horizontal rotate
-              if(isFixed) return;
-              setViewAngleH((ViewAngleH + angle) % 360);
-            }
+            
             public double calcDistToPed(Pedestrian ped)
             {
               // 이차원 상 거리
@@ -410,13 +431,13 @@ namespace surveillance_system
                 {
                     // 211126_2
                     V_FOV.Set_X012(V_FOV_X_temp.Angle_0[i], 
-                                   V_FOV_X_temp.Angle_1[i], 
-                                   V_FOV_X_temp.Angle_2[i], 
-                                   i);
+                                  V_FOV_X_temp.Angle_1[i], 
+                                  V_FOV_X_temp.Angle_2[i], 
+                                  i);
                     V_FOV.Set_Y012(V_FOV_Y_temp.Angle_0[i], 
-                                   V_FOV_Y_temp.Angle_1[i], 
-                                   V_FOV_Y_temp.Angle_2[i], 
-                                   i);                    
+                                  V_FOV_Y_temp.Angle_1[i], 
+                                  V_FOV_Y_temp.Angle_2[i], 
+                                  i);                    
                 }
             }
 
