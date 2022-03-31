@@ -254,7 +254,7 @@ namespace surveillance_system
                 log_PED_position = new int[5];
             }
             // time check start
-            double accTime = 0.0;
+            // double accTime = 0.0;
             const int N_CCTV = 36;
             const int N_Ped = 10;
 
@@ -352,7 +352,7 @@ namespace surveillance_system
                     ped.define_PED(Ped_Width, Ped_Height, dst_x, dst_y, Ped_Velocity);
                     ped.setDirection();
                     ped.TTL = (int)Math.Ceiling((minDist / ped.Velocity) / aUnitTime);
-                    ped.printPedInfo();
+                    // ped.printPedInfo();
                 }
                 // cctv init
                 for (int i = 0; i < N_CCTV; i++)
@@ -402,7 +402,7 @@ namespace surveillance_system
 
                     cctvs[i].get_H_FOV(Dist, cctvs[i].WD, cctvs[i].Focal_Length, cctvs[i].ViewAngleH, cctvs[i].X, cctvs[i].Y);
                     cctvs[i].get_V_FOV(Dist, cctvs[i].HE, cctvs[i].Focal_Length, cctvs[i].ViewAngleV, cctvs[i].X, cctvs[i].Z);
-                    cctvs[i].printCCTVInfo();
+                    // cctvs[i].printCCTVInfo();
                 }
             }
             /* -------------------------------------------
@@ -499,13 +499,21 @@ namespace surveillance_system
                     }
                 }
             }
-            // 결과
-            Console.WriteLine("Execution time : {0}", stopwatch.ElapsedMilliseconds + "ms");
-            accTime += stopwatch.ElapsedMilliseconds;
+            double totalSimCount = Sim_Time / aUnitTime * N_Ped;
+
+            // 결과(탐지율)
+            Console.WriteLine("====== Surveillance Time ======");
+            Console.WriteLine("Out of Range: {0:F2}% ({1}/{2})", 100*outOfRange.Sum()/totalSimCount, outOfRange.Sum(), totalSimCount);
+            Console.WriteLine("Direction Error: {0:F2}% ({1}/{2})", 100*directionError.Sum()/totalSimCount, directionError.Sum(), totalSimCount);
+            Console.WriteLine("Surveillance Time: {0:F2}% ({1}/{2})", 100*R_Surv_Time.Sum()/totalSimCount, R_Surv_Time.Sum(), totalSimCount);
+
+            // 결과(시간)
+            // Console.WriteLine("Execution time : {0}", stopwatch.ElapsedMilliseconds + "ms");
+            // accTime += stopwatch.ElapsedMilliseconds;
             
-            Console.WriteLine("\n============ RESULT ============");
-            Console.WriteLine("CCTV: {0}, Ped: {1}", N_CCTV, N_Ped);
-            Console.WriteLine("Execution time : {0}\n", (accTime / 1000.0 ) + " sec");
+            // Console.WriteLine("\n============ RESULT ============");
+            // Console.WriteLine("CCTV: {0}, Ped: {1}", N_CCTV, N_Ped);
+            // Console.WriteLine("Execution time : {0}\n", (accTime / 1000.0 ) + " sec");
         }
     }
 }
