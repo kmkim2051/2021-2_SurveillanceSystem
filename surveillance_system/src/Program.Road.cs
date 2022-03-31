@@ -24,13 +24,16 @@ namespace surveillance_system
             public double[,] lane_v_right; // 세로 중앙선 오른쪽 라인 x값
 
             public double[,] DST; // 도로 교차점
+            public double[,] intersectionArea; // 도로 교차구간
             public int size;
+            public int n_interval;
 
             public void roadBuilder(int wd, int intvl, int n_interval, int n_cctv, int n_ped)
             {
                 DST = new double[n_interval * n_interval, 2];
-
-                // 교차점 좌표 저장
+                intersectionArea = new double[n_interval * n_interval, 4];
+                this.n_interval = n_interval;
+                // 교차점, 교차구간 설정
                 int idx = 0;
                 for (int i = 0; i < n_interval; i++)
                 {
@@ -38,6 +41,11 @@ namespace surveillance_system
                     {
                         DST[idx, 0] = (intvl + wd) * i;
                         DST[idx, 1] = (intvl + wd) * j;
+
+                        intersectionArea[idx, 0] = DST[idx, 0] -( wd / 2); // x_min
+                        intersectionArea[idx, 1] = DST[idx, 0] + (wd / 2); // x_max
+                        intersectionArea[idx, 2] = DST[idx, 1] - (wd / 2); // y_min
+                        intersectionArea[idx, 3] = DST[idx, 1] + (wd / 2); // y_max
                         idx++;
                     }
                 }
@@ -126,7 +134,48 @@ namespace surveillance_system
                     }
                 }
             }
-            
+
+            public double[,] getPointOfAdjacentRoad(int currAreaIdx)
+            {
+                if(currAreaIdx == -1)
+                {
+                    return new double[,] { { 0, 0 } };
+                }
+
+                int i = currAreaIdx / n_interval;
+                int j = currAreaIdx % n_interval;
+                Random rand = new Random();
+
+                do
+                {
+                    int opt = rand.Next(0, 4);
+                    if (opt == 0) j += 1; // up
+                    else if(opt == 1) j -= 1; // down
+                    else if (opt == 2)  i -= 1; // left
+                    else if(opt == 3) i += 1; // right
+                } while ((i >= 0 && i < n_interval) && (j >= 0 && j < n_interval));
+
+                int idx = n_interval * i + j;
+                double[,] newPos = new double[1, 2];
+                newPos[0,0] = DST[idx,0] + rand.Next(-n_interval, n_interval)*rand.NextDouble();
+                newPos[0,1] = DST[idx, 1] + rand.Next(-n_interval, n_interval) * rand.NextDouble();
+
+                return newPos;
+            }
+
+            public int getIdxOfIntersection(double x, double y)
+            {
+                for(int i = 0; i < intersectionArea.GetLength(0);  i++)
+                {
+                    if(x>=intersectionArea[i,0] && x<=intersectionArea[i,1] && y>=intersectionArea[i,2] && y <= intersectionArea[i, 3])
+                    {
+                        return i;
+                    }
+                }
+
+                return -1;
+            }
+
             public void printRoadInfo()
             {
                 Console.WriteLine("\n======================== DST ===============================================");
