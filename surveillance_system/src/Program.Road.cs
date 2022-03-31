@@ -157,7 +157,7 @@ namespace surveillance_system
 
                 int idx = n_interval * i + j;
                 double[,] newPos = new double[1, 2];
-                newPos[0,0] = DST[idx,0] + rand.Next(-n_interval, n_interval)*rand.NextDouble();
+                newPos[0,0] = DST[idx, 0] + rand.Next(-n_interval, n_interval) * rand.NextDouble();
                 newPos[0,1] = DST[idx, 1] + rand.Next(-n_interval, n_interval) * rand.NextDouble();
 
                 return newPos;

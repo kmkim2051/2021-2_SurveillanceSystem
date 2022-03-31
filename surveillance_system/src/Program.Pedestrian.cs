@@ -70,7 +70,8 @@ namespace surveillance_system
                 this.Pos_V1[1] = this.H;
 
                 this.Pos_V2[0] = this.X;
-                this.Pos_V2[1] = 0;
+                // [220331] may be height of ground, instead of 0
+                this.Pos_V2[1] = 0; 
 
                 this.DST_X = DST_X;
                 this.DST_Y = DST_Y;
@@ -158,7 +159,8 @@ namespace surveillance_system
                 // 목적지 도착 검사
                 if (isArrived())
                 {
-                    updateDestination();
+                    // Index out of range
+                    // updateDestination(); 
                     setDirection();
                 }
             }

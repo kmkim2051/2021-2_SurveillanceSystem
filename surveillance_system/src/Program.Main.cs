@@ -40,10 +40,10 @@ namespace surveillance_system
                             Math.Pow(cctvs[i].Y - peds[j].Pos_H2[1], 2)) * 0.000001;
                     double dist_v1 = Math
                             .Sqrt(Math.Pow(cctvs[i].X - peds[j].Pos_V1[0], 2) +
-                            Math.Pow(cctvs[i].Y - peds[j].Pos_V1[1], 2)) * 0.000001;
+                            Math.Pow(cctvs[i].Z - peds[j].Pos_V1[1], 2)) * 0.000001;
                     double dist_v2 = Math
                             .Sqrt(Math.Pow(cctvs[i].X - peds[j].Pos_V2[0], 2) +
-                            Math.Pow(cctvs[i].Y - peds[j].Pos_V2[1], 2)) * 0.000001;
+                            Math.Pow(cctvs[i].Z - peds[j].Pos_V2[1], 2)) * 0.000001;
 
                     foreach (double survdist_h in cctvs[i].SurvDist_H)
                     {
@@ -109,13 +109,19 @@ namespace surveillance_system
 
                     if (candidate_detected_ped_v[i, j] == 1)
                     {
+                      // Surv_SYS_v210202.m [line 260]
+                      /*         
+                        if ismember(j, Candidates_Detected_PED_V1)
+                        A = [CCTV(i).V_FOV_X0(1,:); CCTV(i).V_FOV_Z0(1,:)] - [CCTV(i).X; CCTV(i).Z];
+                        B = [PED(j).Pos_V1(1); PED(j).Pos_V1(2)] - [CCTV(i).X; CCTV(i).Z]; 
+                      */
                         int len = cctvs[i].V_FOV.X0.GetLength(0);
-                        double[] A = { cctvs[i].V_FOV.X0[len - 1] - cctvs[i].X, cctvs[i].V_FOV.Y0[len - 1] - cctvs[i].Y };
-                        double[] B = { peds[j].Pos_V1[0] - cctvs[i].X, peds[j].Pos_V1[1] - cctvs[i].Y };
+                        double[] A = { cctvs[i].V_FOV.X0[len - 1] - cctvs[i].X, cctvs[i].V_FOV.Z0[len - 1] - cctvs[i].Z };
+                        double[] B = { peds[j].Pos_V1[0] - cctvs[i].X, peds[j].Pos_V1[1] - cctvs[i].Z };
                         double cosine_PED_v1 = InnerProduct(A, B) / (Norm(A) * Norm(B));
 
                         B[0] = peds[j].Pos_V2[0] - cctvs[i].X;
-                        B[1] = peds[j].Pos_V2[1] - cctvs[i].Y;
+                        B[1] = peds[j].Pos_V2[1] - cctvs[i].Z;
                         double cosine_PED_v2 = InnerProduct(A, B) / (Norm(A) * Norm(B));
 
                         if (cosine_PED_v1 < cosine_V_AOV && cosine_PED_v2 < cosine_V_AOV)
@@ -322,7 +328,6 @@ namespace surveillance_system
                 //ped init
                 foreach(Pedestrian ped in peds)
                 {
-                    
                     double minDist = 0.0;
                     int idx_minDist = 0;
                     double[] Dist_Map = new double[road.DST.GetLength(0)];

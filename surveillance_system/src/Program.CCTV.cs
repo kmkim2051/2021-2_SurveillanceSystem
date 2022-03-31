@@ -424,8 +424,9 @@ namespace surveillance_system
 
                 V_FOV = new FOV();
                 // 211126
+                // 220331 Init은 생성자로 빼도 되지않나
                 V_FOV.Init_X012(Dist.Length);
-                V_FOV.Init_Y012(Dist.Length);
+                V_FOV.Init_Z012(Dist.Length);
 
                 for (int i = 0; i < Dist.Length; i++)
                 {
@@ -434,7 +435,7 @@ namespace surveillance_system
                                   V_FOV_X_temp.Angle_1[i], 
                                   V_FOV_X_temp.Angle_2[i], 
                                   i);
-                    V_FOV.Set_Y012(V_FOV_Y_temp.Angle_0[i], 
+                    V_FOV.Set_Z012(V_FOV_Y_temp.Angle_0[i], 
                                   V_FOV_Y_temp.Angle_1[i], 
                                   V_FOV_Y_temp.Angle_2[i], 
                                   i);                    
