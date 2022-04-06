@@ -91,22 +91,29 @@ namespace surveillance_system
                 setPed(n_ped);
             }
 
+            // 보행자 위치 처음 설정
             public void setPed(int n_ped)
             {
                 for(int i = 0; i < n_ped; i++)
                 {
                     Random rand = new Random();
-                    double opt = rand.NextDouble();
+                    int intersectidx = rand.Next(8);
+                    double[,] newPos = getPointOfAdjacentRoad(intersectidx);
+                    peds[i].X = Math.Round(newPos[0, 0]);
+                    peds[i].Y = Math.Round(newPos[0, 1]);
 
-                    if (opt > 0.5) {
-                        peds[i].X = Math.Round(laneVector.Max() * opt);
-                        peds[i].Y = lane_h[rand.Next(0, lane_h.GetLength(0)), 0];
-                    }
-                    else
-                    {
-                        peds[i].X =lane_v[rand.Next(0, lane_v.GetLength(0)), 0];
-                        peds[i].Y = Math.Round(laneVector.Max() * opt);
-                    }
+                    //Random rand = new Random();
+                    //double opt = rand.NextDouble();
+
+                    //if (opt > 0.5) {
+                    //    peds[i].X = Math.Round(laneVector.Max() * opt);
+                    //    peds[i].Y = lane_h[rand.Next(0, lane_h.GetLength(0)), 0];
+                    //}
+                    //else
+                    //{
+                    //    peds[i].X =lane_v[rand.Next(0, lane_v.GetLength(0)), 0];
+                    //    peds[i].Y = Math.Round(laneVector.Max() * opt);
+                    //}
                 }
             }
 
