@@ -224,6 +224,9 @@ namespace surveillance_system
             -------------------------------------------------------------------------*/
             // Configuration: surveillance cameras
             // constant
+            const int N_CCTV = 36;
+            const int N_Ped = 10;
+
             Random rand = new Random();
             const double Lens_FocalLength = 2.8; // mm, [2.8 3.6 6 8 12 16 25]
             const double WD = 3.6; // (mm) width, horizontal size of camera sensor
@@ -261,8 +264,6 @@ namespace surveillance_system
             }
             // time check start
             // double accTime = 0.0;
-            const int N_CCTV = 36;
-            const int N_Ped = 10;
 
             // ped csv file 출력 여부
             bool createPedCSV = false;
