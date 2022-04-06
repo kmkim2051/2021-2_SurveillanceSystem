@@ -306,8 +306,13 @@ namespace surveillance_system
                 for (int i = 0; i < Dist.Length; i++)
                 {
                     H_FOV_0[i] = 0;
-                    H_FOV_1[i] = (1 / 2) * Dist[i] * HE / Focal_Length;
-                    H_FOV_2[i] = (-1 / 2) * Dist[i] * HE / Focal_Length;
+                    // 220407
+                    // https://github.com/0BoOKim/Surveillance-System/blob/main/get_H_FOV.m
+                    // line 9, 10
+                    // H_FOV_1[i] = (1 / 2) * Dist[i] * HE / Focal_Length;
+                    // H_FOV_2[i] = (-1 / 2) * Dist[i] * HE / Focal_Length;
+                    H_FOV_1[i] = (1 / 2) * Dist[i] * WD / Focal_Length;
+                    H_FOV_2[i] = (-1 / 2) * Dist[i] * WD / Focal_Length;
 
                     H_X0[i] =
                         Dist[i] * Math.Cos(ViewAngle) -
@@ -379,27 +384,29 @@ namespace surveillance_system
                 for (int i = 0; i < Dist.Length; i++)
                 {
                     // 211126_2
-                    double Dist_WD_FL = Dist[i] * WD / Focal_Length;
+                    // 220407
+                    // https://github.com/0BoOKim/Surveillance-System/blob/main/get_V_FOV.m
+                    // 기존 코드 두줄
+                    // double Dist_WD_FL = Dist[i] * WD / Focal_Length;
+                    // double Dist_Cos_ViewAngle = Dist[i] * Math.Cos(ViewAngle);
+                    double Dist_HE_FL = (1/2) * Dist[i] * HE / Focal_Length;
                     double Dist_Cos_ViewAngle = Dist[i] * Math.Cos(ViewAngle);
+
                     V_FOV_temp
-                        .Set_Angle012(0, Dist_WD_FL, (-1) * Dist_WD_FL, i);
+                        .Set_Angle012(0, Dist_HE_FL, (-1) * Dist_HE_FL, i);
                     V_X_temp
-                        .Set_Angle012(Dist_Cos_ViewAngle -
-                        V_FOV_temp.Angle_0[i] * Math.Sin(ViewAngle),
-                        Dist_Cos_ViewAngle -
-                        V_FOV_temp.Angle_1[i] * Math.Sin(ViewAngle),
-                        Dist_Cos_ViewAngle -
-                        V_FOV_temp.Angle_2[i] * Math.Sin(ViewAngle),
-                        i
+                        .Set_Angle012(
+                          Dist_Cos_ViewAngle - V_FOV_temp.Angle_0[i] * Math.Sin(ViewAngle),
+                          Dist_Cos_ViewAngle - V_FOV_temp.Angle_1[i] * Math.Sin(ViewAngle),
+                          Dist_Cos_ViewAngle - V_FOV_temp.Angle_2[i] * Math.Sin(ViewAngle),
+                         i
                         );
                     V_Y_temp
-                        .Set_Angle012(Dist_Cos_ViewAngle +
-                        V_FOV_temp.Angle_0[i] * Math.Sin(ViewAngle),
-                        Dist_Cos_ViewAngle +
-                        V_FOV_temp.Angle_1[i] * Math.Sin(ViewAngle),
-                        Dist_Cos_ViewAngle +
-                        V_FOV_temp.Angle_2[i] * Math.Sin(ViewAngle),
-                        i
+                        .Set_Angle012(
+                          Dist_Cos_ViewAngle + V_FOV_temp.Angle_0[i] * Math.Sin(ViewAngle),
+                          Dist_Cos_ViewAngle + V_FOV_temp.Angle_1[i] * Math.Sin(ViewAngle),
+                          Dist_Cos_ViewAngle + V_FOV_temp.Angle_2[i] * Math.Sin(ViewAngle),
+                          i
                         );
                 }
 

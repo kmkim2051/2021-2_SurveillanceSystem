@@ -160,8 +160,8 @@ namespace surveillance_system
                 if (isArrived())
                 {
                     // Index out of range
-                    updateDestination(); 
-                    setDirection();
+                    // updateDestination(); 
+                    // setDirection();
                 }
             }
             public void downVelocity()
