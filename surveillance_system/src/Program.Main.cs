@@ -319,7 +319,8 @@ namespace surveillance_system
 
             if (On_Road_Builder)
             {
-                road.roadBuilder(Road_Width, Road_Interval, Road_N_Interval, N_CCTV, N_Ped); // 도로 정보 생성
+                // 도로 정보 생성, 보행자 정보 생성
+                road.roadBuilder(Road_Width, Road_Interval, Road_N_Interval, N_CCTV, N_Ped); 
                 road.printRoadInfo();
 
                 /*
@@ -339,17 +340,18 @@ namespace surveillance_system
                 foreach(Pedestrian ped in peds)
                 {
                     double minDist = 0.0;
-                    int idx_minDist = 0;
-                    double[] Dist_Map = new double[road.DST.GetLength(0)];
-                    
-                    Calc_Dist_and_get_MinDist(road.DST, ped.X, ped.Y, ref Dist_Map, ref minDist, ref idx_minDist);
-                    double dst_x = road.DST[idx_minDist, 0];
-                    double dst_y = road.DST[idx_minDist, 1];
-        
-                    //Console.WriteLine("\n============================================================\n");
-                    //Console.WriteLine("{0}번째 보행자 -  {1}번째 목적지(좌표: {2}, {3}) ",
-                    //   Array.IndexOf(peds, ped)+1, idx_minDist, dst_x, dst_y);
+                    //int idx_minDist = 0;
+                    //double[] Dist_Map = new double[road.DST.GetLength(0)];
 
+                    // 맨처음 위치에서 가장 가까운 도착지를 설정 (보행자 맨처음 위치는 line 314에서 setPed()로 설정)
+                    double[,] newPos = road.getPointOfAdjacentRoad(road.getIdxOfIntersection(ped.X, ped.Y));
+                    double dst_x = Math.Round(newPos[0, 0]);
+                    double dst_y = Math.Round(newPos[0, 1]);
+
+                    //Calc_Dist_and_get_MinDist(road.DST, ped.X, ped.Y, ref Dist_Map, ref minDist, ref idx_minDist);
+                    
+                    //double dst_x = road.DST[idx_minDist, 0];
+                    //double dst_y = road.DST[idx_minDist, 1];
 
                     // 보행자~목적지 벡터
                     /*
@@ -363,7 +365,7 @@ namespace surveillance_system
                     {
                         direction = Math.Round(2 * Math.PI - direction, 8); 
                     }
-                    */           
+                    */
                     ped.define_PED(Ped_Width, Ped_Height, dst_x, dst_y, Ped_Velocity);
                     ped.setDirection();
                     ped.TTL = (int)Math.Ceiling((minDist / ped.Velocity) / aUnitTime);

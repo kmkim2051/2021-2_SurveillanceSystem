@@ -173,10 +173,10 @@ namespace surveillance_system
                 this.Velocity += 0.01f;
             }
             public  void  updateDestination()
-            {
+            {      
                 double[,] newPos = road.getPointOfAdjacentRoad(road.getIdxOfIntersection(X, Y));
-                DST_X = newPos[0, 0];
-                DST_Y = newPos[0, 1];
+                DST_X = Math.Round(newPos[0, 0]);
+                DST_Y = Math.Round(newPos[0, 1]);
             }
             public void walk()
             {

@@ -23,6 +23,7 @@ namespace surveillance_system
                                         + (List_Pos1[i,1] - Pos2_Y) * (List_Pos1[i,1] - Pos2_Y));
             }
 
+
             minDist = Dist_Map.Min();
             Idx_minDist = Array.IndexOf(Dist_Map, minDist);
         }
