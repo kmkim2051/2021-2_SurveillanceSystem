@@ -4,6 +4,7 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Diagnostics;
+using System.Collections.Generic;
 
 namespace surveillance_system
 {
@@ -78,7 +79,6 @@ namespace surveillance_system
                 double cosine_H_AOV = Math.Cos(cctvs[i].H_AOV / 2);
                 double cosine_V_AOV = Math.Cos(cctvs[i].V_AOV / 2);
 
-
                 for (int j = 0; j < N_Ped; j++)
                 {
                     int h_detected = -1;
@@ -87,6 +87,7 @@ namespace surveillance_system
                     // 거리가 범위 내이면
                     if (candidate_detected_ped_h[i, j] == 1)
                     {
+                        // len equals Dist
                         int len = cctvs[i].H_FOV.X0.GetLength(0);
                         double[] A = { cctvs[i].H_FOV.X0[len - 1] - cctvs[i].X, cctvs[i].H_FOV.Y0[len - 1] - cctvs[i].Y };
                         double[] B = { peds[j].Pos_H1[0] - cctvs[i].X, peds[j].Pos_H1[1] - cctvs[i].Y };
@@ -149,6 +150,8 @@ namespace surveillance_system
                         cctv_detecting_cnt[i]++;
 
                         returnArr[j] = 1;
+                        // 220407
+                        cctvs[i].detectedPedIndex.Add(j);
                     }
                     // 방향 미스 (h or v 중 하나라도 방향이 맞지 않는 경우)
                     else // cctv[i]가 보행자[j]를 h or v 탐지 실패 여부 추가
@@ -163,8 +166,12 @@ namespace surveillance_system
 
                         returnArr[j] = (returnArr[j] == 1 ? 1 : -1);
                     }
-                }
+                } // 탐지 여부 계산 완료
             }
+
+
+
+            // 여기부턴 h or v 각각 분석
             // 각 cctv는 h, v 축에서 얼마나 많이 놓쳤나?
             int[] cctv_missing_count_h = new int[N_CCTV];
             int[] cctv_missing_count_v = new int[N_CCTV];
@@ -360,7 +367,7 @@ namespace surveillance_system
                     ped.define_PED(Ped_Width, Ped_Height, dst_x, dst_y, Ped_Velocity);
                     ped.setDirection();
                     ped.TTL = (int)Math.Ceiling((minDist / ped.Velocity) / aUnitTime);
-                    // ped.printPedInfo();
+                    ped.printPedInfo();
                 }
                 // cctv init
                 for (int i = 0; i < N_CCTV; i++)
@@ -394,6 +401,8 @@ namespace surveillance_system
 
                     // 기기 성능상의 최대 감시거리 (임시값)
                     cctvs[i].Max_Dist = 50 * 100 * 10; // 50m (milimeter)
+
+                    cctvs[i].detectedPedIndex = new List<int>();
 
                     // Line 118~146
                     /*  여기부턴 Road_Builder 관련 정보가 없으면 의미가 없을거같아서 주석처리했어용..
@@ -454,6 +463,14 @@ namespace surveillance_system
                     else if (res[i] == -1) directionError[i]++;
                     else if (res[i] == 1) R_Surv_Time[i]++;
                 }
+
+                /* 220407 
+                 * 보행자 방향 따라 CCTV 회전 제어
+                 * 각 보행자가 탐지/미탐지 여부를 넘어서
+                 * 특정 CCTV가 지금 탐지한 보행자의 정보를 알아야함
+                 * 그래야 보행자의 범위 내 위치, 방향을 읽어서
+                 * 보행자의 이동 방향으로 CCTV 회전 여부, 회전 시 방향 및 각도 설정 가능
+                */
 
                 // 이동
                 for (int i = 0; i < peds.Length; i++)

@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text;
+using System.Collections.Generic;
 
 namespace surveillance_system
 {
@@ -214,6 +214,8 @@ namespace surveillance_system
 
             public FOV V_FOV;
 
+            public List<int> detectedPedIndex;
+
             public void setZ(int z)
             {
               if (z >= 3000) // 3000: minimum z
@@ -279,7 +281,7 @@ namespace surveillance_system
             }
             public void get_H_FOV(
                 double[] Dist,
-                double HE,
+                double WD,
                 double Focal_Length,
                 double ViewAngle,
                 double X,
@@ -351,6 +353,8 @@ namespace surveillance_system
                 H_FOV.Init_X012(Dist.Length);
                 H_FOV.Init_Y012(Dist.Length);
 
+                // 220407 반복문을 돌 필요가 있나?
+                // 그냥 배열 그대로 넘겨주면 되는거 아닌가 고민..
                 for (int i = 0; i < Dist.Length; i++)
                 {
                     // 211126
@@ -369,7 +373,7 @@ namespace surveillance_system
 
             public void get_V_FOV(
                 double[] Dist,
-                double WD,
+                double HE,
                 double Focal_Length,
                 double ViewAngle,
                 double X,
