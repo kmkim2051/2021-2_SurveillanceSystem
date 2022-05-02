@@ -307,7 +307,7 @@ namespace surveillance_system
 
                 for (int i = 0; i < Dist.Length; i++)
                 {
-                    H_FOV_0[i] = 0;
+                    H_FOV_0[i] = 0; // 해당 점이 CCTV에서 Horizontal(X)만큼 얼마나 떨어졌는지 크기
                     // 220407
                     // https://github.com/0BoOKim/Surveillance-System/blob/main/get_H_FOV.m
                     // line 9, 10
@@ -395,6 +395,8 @@ namespace surveillance_system
                     // double Dist_Cos_ViewAngle = Dist[i] * Math.Cos(ViewAngle);
                     double Dist_HE_FL = (1/2) * Dist[i] * HE / Focal_Length;
                     double Dist_Cos_ViewAngle = Dist[i] * Math.Cos(ViewAngle);
+                    double Dist_Sin_ViewAngle = Dist[i] * Math.Sin(ViewAngle);
+
 
                     V_FOV_temp
                         .Set_Angle012(0, Dist_HE_FL, (-1) * Dist_HE_FL, i);
@@ -407,9 +409,9 @@ namespace surveillance_system
                         );
                     V_Y_temp
                         .Set_Angle012(
-                          Dist_Cos_ViewAngle + V_FOV_temp.Angle_0[i] * Math.Sin(ViewAngle),
-                          Dist_Cos_ViewAngle + V_FOV_temp.Angle_1[i] * Math.Sin(ViewAngle),
-                          Dist_Cos_ViewAngle + V_FOV_temp.Angle_2[i] * Math.Sin(ViewAngle),
+                          Dist_Sin_ViewAngle + V_FOV_temp.Angle_0[i] * Math.Cos(ViewAngle),
+                          Dist_Sin_ViewAngle + V_FOV_temp.Angle_1[i] * Math.Cos(ViewAngle),
+                          Dist_Sin_ViewAngle + V_FOV_temp.Angle_2[i] * Math.Cos(ViewAngle),
                           i
                         );
                 }

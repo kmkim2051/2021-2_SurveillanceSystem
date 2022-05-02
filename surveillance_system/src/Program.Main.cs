@@ -46,6 +46,7 @@ namespace surveillance_system
                             .Sqrt(Math.Pow(cctvs[i].X - peds[j].Pos_V2[0], 2) +
                             Math.Pow(cctvs[i].Z - peds[j].Pos_V2[1], 2)) * 0.000001;
 
+                      
                     foreach (double survdist_h in cctvs[i].SurvDist_H)
                     {
                         if (dist_h1 <= survdist_h && dist_h2 <= survdist_h)
@@ -61,6 +62,14 @@ namespace surveillance_system
                             candidate_detected_ped_v[i, j] = 1;
                         }
                     }
+
+                    // if (cctvs[i].isPedInEffDist(peds[j])) {
+                    //   candidate_detected_ped_h[i, j] = 1;
+                    //   candidate_detected_ped_v[i, j] = 1;
+                    // }
+
+                      // candidate_detected_ped_h[i, j] = 1;
+                      // candidate_detected_ped_v[i, j] = 1;
                 }
             }
 
@@ -97,7 +106,7 @@ namespace surveillance_system
                         B[1] = peds[j].Pos_H2[1] - cctvs[i].Y;
                         double cosine_PED_h2 = InnerProduct(A, B) / (Norm(A) * Norm(B));
 
-                        if (cosine_PED_h1 < cosine_H_AOV && cosine_PED_h2 < cosine_H_AOV)
+                        if (cosine_PED_h1 >= cosine_H_AOV && cosine_PED_h2 >= cosine_H_AOV)
                         {
                             //감지 됨
                             h_detected = 1;
@@ -125,7 +134,7 @@ namespace surveillance_system
                         B[1] = peds[j].Pos_V2[1] - cctvs[i].Z;
                         double cosine_PED_v2 = InnerProduct(A, B) / (Norm(A) * Norm(B));
 
-                        if (cosine_PED_v1 < cosine_V_AOV && cosine_PED_v2 < cosine_V_AOV)
+                        if (cosine_PED_v1 >= cosine_V_AOV && cosine_PED_v2 >= cosine_V_AOV)
                         {
                             //감지 됨
                             v_detected = 1;
@@ -232,7 +241,7 @@ namespace surveillance_system
             // Configuration: surveillance cameras
             // constant
             const int N_CCTV = 36;
-            const int N_Ped = 10;
+            const int N_Ped = 100;
 
             Random rand = new Random();
             const double Lens_FocalLength = 2.8; // mm, [2.8 3.6 6 8 12 16 25]
@@ -321,6 +330,13 @@ namespace surveillance_system
             {
                 // 도로 정보 생성, 보행자 정보 생성
                 road.roadBuilder(Road_Width, Road_Interval, Road_N_Interval, N_CCTV, N_Ped); 
+                // debug 220428
+                for(int i = 0 ; i < N_CCTV; i++) {
+                  Console.Write(cctvs[i].X);
+                  Console.Write(", ");
+                  Console.WriteLine(cctvs[i].Y);
+
+                }
                 road.printRoadInfo();
 
                 /*
@@ -403,6 +419,8 @@ namespace surveillance_system
 
                     // 기기 성능상의 최대 감시거리 (임시값)
                     cctvs[i].Max_Dist = 50 * 100 * 10; // 50m (milimeter)
+                    // cctvs[i].Max_Dist = 500 * 100 * 100; // 500m (milimeter)
+
 
                     cctvs[i].detectedPedIndex = new List<int>();
 
