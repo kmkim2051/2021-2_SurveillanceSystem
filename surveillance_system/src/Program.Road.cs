@@ -123,32 +123,29 @@ namespace surveillance_system
             public void setCCTV(int n_cctv, int wd, int n_interval)
             {
 
+                double range = mapSize - width;
+                int rootN = (int)Math.Sqrt((double)n_cctv);
 
-                /*
-                for (int i = 0; i < n_cctv; i++)
+                // x좌표가 int 형식이라 캐스팅해서 완벽한 그리드는 아닐 수 있음
+                int intvl = (int)range / (rootN-1); 
+                Console.WriteLine("range rootN intvl {0} {1} {2}", range, rootN, intvl);
+                double startX = DST[0, 0];
+                double startY = DST[0, 1];
+
+                int cctvIdx = 0;
+                for(int i = 0; i < rootN; i ++)
                 {
-                    Random rand = new Random();
-                    double opt = rand.NextDouble();
-                    
-                    // 잘 모르겠음 
-                    if (opt > 0.5)
+                    startX = DST[0, 0];
+                    for (int j = 0; j < rootN; j++)
                     {
-                        double rand_y = Math.Round(opt);
-                        if (rand_y == 0) rand_y = -1;
-
-                        cctvs[i].X = (int)(-1 * wd / 2 + laneVector.Max() * opt);
-                        cctvs[i].Y = (int)(lane_h[rand.Next(0, n_interval),0]+rand_y*wd/2);
+                        cctvs[cctvIdx].X = (int)startX;
+                        cctvs[cctvIdx].Y = (int)startY;
+                        cctvIdx++;
+                        startX += intvl;
                     }
-                    else
-                    {
-                        double rand_x = Math.Round(opt);
-                        if (rand_x == 0) rand_x = -1;
 
-                        cctvs[i].X = (int)(lane_v[rand.Next(0, n_interval), 0] + rand_x * wd / 2);
-                        cctvs[i].Y = (int)(-1 * wd / 2 + laneVector.Max() * opt);
-                    }
+                    startY += intvl;
                 }
-                */
             }
 
             public double[,] getPointOfAdjacentRoad(int currAreaIdx)
