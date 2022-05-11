@@ -41,8 +41,8 @@ namespace surveillance_system
                 {
                     for (int j = 0; j < n_interval; j++)
                     {
-                        DST[idx, 0] = (intvl + wd) * i;
-                        DST[idx, 1] = (intvl + wd) * j;
+                        DST[idx, 0] = (intvl + wd) * i + (wd / 2);
+                        DST[idx, 1] = (intvl + wd) * j + (wd / 2);
 
                         intersectionArea[idx, 0] = DST[idx, 0] - (wd / 2); // x_min
                         intersectionArea[idx, 1] = DST[idx, 0] + (wd / 2); // x_max
@@ -71,7 +71,7 @@ namespace surveillance_system
 
                 for (int i = 0; i < n_interval; i++)
                 {
-                    lane_h[i, 0] = i * (intvl + wd);
+                    lane_h[i, 0] = i * (intvl + wd) + (wd / 2);
                     lane_h_upper[i, 0] = lane_h[i, 0] + wd / 2;
                     lane_h_lower[i, 0] = lane_h[i, 0] - wd / 2;
                 }
@@ -82,7 +82,7 @@ namespace surveillance_system
                 lane_v_right = new double[n_interval, 1];
                 for (int i = 0; i < n_interval; i++)
                 {
-                    lane_v[i, 0] = i * (intvl + wd);
+                    lane_v[i, 0] = i * (intvl + wd) + (wd / 2);
                     lane_v_left[i, 0] = lane_h[i, 0] - wd / 2;
                     lane_v_right[i, 0] = lane_h[i, 0] + wd / 2;
                 }
