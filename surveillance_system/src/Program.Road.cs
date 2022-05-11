@@ -25,21 +25,25 @@ namespace surveillance_system
 
             public double[,] DST; // 도로 교차점
             public double[,] intersectionArea; // 도로 교차구간
-            public int size;
-            public int n_interval;
+            public int mapSize;
+            public int lane_num;
+            public int interval;
             public int width;
 
             public void roadBuilder(int wd, int intvl, int n_interval, int n_cctv, int n_ped)
             {
-                DST = new double[n_interval * n_interval, 2];
-                intersectionArea = new double[n_interval * n_interval, 4];
-                this.n_interval = n_interval;
+                this.lane_num = n_interval + 1;
+                DST = new double[lane_num * lane_num, 2];
+                intersectionArea = new double[lane_num * lane_num, 4];
+                this.interval = intvl;
                 this.width = wd;
+
+                this.mapSize = n_interval * intvl + wd * lane_num;
                 // 교차점, 교차구간 설정
                 int idx = 0;
-                for (int i = 0; i < n_interval; i++)
+                for (int i = 0; i < lane_num; i++)
                 {
-                    for (int j = 0; j < n_interval; j++)
+                    for (int j = 0; j < lane_num; j++)
                     {
                         DST[idx, 0] = (intvl + wd) * i + (wd / 2);
                         DST[idx, 1] = (intvl + wd) * j + (wd / 2);
@@ -54,22 +58,21 @@ namespace surveillance_system
 
                 // 도로 벡터 초기화
                 double incr = 100;
-                int laneSize = (int)((intvl + wd) * (n_interval - 1) / incr);
-                size = laneSize * (int)incr;
+                int laneVectorSize = (int)((intvl + wd) * (n_interval) / incr);
                 //Console.WriteLine("laneSize = {0}", laneSize);
-                laneVector = new double[laneSize];
+                laneVector = new double[laneVectorSize];
 
-                for (int i = 0; i < laneSize; i++)
+                for (int i = 0; i < laneVectorSize; i++)
                 {
                     laneVector[i] = i * incr;
                 }
 
                 // 가로 도로 좌표 설정
-                lane_h = new double[n_interval, 1];
-                lane_h_upper = new double[n_interval, 1];
-                lane_h_lower = new double[n_interval, 1];
+                lane_h = new double[lane_num, 1];
+                lane_h_upper = new double[lane_num, 1];
+                lane_h_lower = new double[lane_num, 1];
 
-                for (int i = 0; i < n_interval; i++)
+                for (int i = 0; i < lane_num; i++)
                 {
                     lane_h[i, 0] = i * (intvl + wd) + (wd / 2);
                     lane_h_upper[i, 0] = lane_h[i, 0] + wd / 2;
@@ -77,17 +80,17 @@ namespace surveillance_system
                 }
 
                 // 세로 도로 좌표 설정
-                lane_v = new double[n_interval, 1];
-                lane_v_left = new double[n_interval, 1];
-                lane_v_right = new double[n_interval, 1];
-                for (int i = 0; i < n_interval; i++)
+                lane_v = new double[lane_num, 1];
+                lane_v_left = new double[lane_num, 1];
+                lane_v_right = new double[lane_num, 1];
+                for (int i = 0; i < lane_num; i++)
                 {
                     lane_v[i, 0] = i * (intvl + wd) + (wd / 2);
                     lane_v_left[i, 0] = lane_h[i, 0] - wd / 2;
                     lane_v_right[i, 0] = lane_h[i, 0] + wd / 2;
                 }
 
-                setCCTV(n_cctv, wd, n_interval);
+                setCCTV(n_cctv, wd, lane_num);
                 setPed(n_ped);
             }
 
@@ -119,6 +122,9 @@ namespace surveillance_system
 
             public void setCCTV(int n_cctv, int wd, int n_interval)
             {
+
+
+                /*
                 for (int i = 0; i < n_cctv; i++)
                 {
                     Random rand = new Random();
@@ -142,6 +148,7 @@ namespace surveillance_system
                         cctvs[i].Y = (int)(-1 * wd / 2 + laneVector.Max() * opt);
                     }
                 }
+                */
             }
 
             public double[,] getPointOfAdjacentRoad(int currAreaIdx)
@@ -156,8 +163,8 @@ namespace surveillance_system
 
                 do
                 {
-                    i = currAreaIdx / n_interval;
-                    j = currAreaIdx % n_interval;
+                    i = currAreaIdx / lane_num;
+                    j = currAreaIdx % lane_num;
 
                     int opt = rand.Next(0, 4);
                     if (opt == 0) j += 1; // up
@@ -165,9 +172,9 @@ namespace surveillance_system
                     else if (opt == 2)  i -= 1; // left
                     else if(opt == 3) i += 1; // right
 
-                } while (i< 0 || i >= n_interval || j < 0|| j >= n_interval);
+                } while (i< 0 || i >= lane_num || j < 0|| j >= lane_num);
 
-                int idx = n_interval * i + j;
+                int idx = lane_num * i + j;
                 double[,] newPos = new double[1, 2];
                 newPos[0,0] = DST[idx, 0] + rand.Next(-width, width) * rand.NextDouble();
                 newPos[0,1] = DST[idx, 1] + rand.Next(-width, width) * rand.NextDouble();

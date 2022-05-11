@@ -285,7 +285,7 @@ namespace surveillance_system
             {
                 Road_Width = 10000; // mm
                 Road_Interval = 235000; // mm, 10 meter
-                Road_N_Interval = 3;
+                Road_N_Interval = 2;
             }
 
             bool Opt_Observation = false;
