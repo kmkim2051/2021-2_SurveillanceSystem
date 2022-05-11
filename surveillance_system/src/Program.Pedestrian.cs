@@ -100,7 +100,7 @@ namespace surveillance_system
             public Boolean isArrived()
             {
                 double[] dist = { X - DST_X, Y - DST_Y };
-                if (Norm(dist) < 100) return true;
+                if (Norm(dist) < 1000) return true;
                 else return false;
             }
 
@@ -117,6 +117,15 @@ namespace surveillance_system
                 Console.WriteLine("Pos_V1 : ({0},{1})   Pos_V2 : ({2},{3}) \n",
                     this.Pos_V1[0], this.Pos_V1[1], this.Pos_V2[0], this.Pos_V2[1]);
                 Console.WriteLine("TTL : {0} \n", this.TTL);
+            }
+
+            public Boolean outOfRange()
+            {
+                if (X < 0 || X > road.mapSize || Y < 0 || Y > road.mapSize)
+                {
+                    return true;
+                }
+                return false;
             }
         }
 
@@ -146,6 +155,7 @@ namespace surveillance_system
                 // 이동
                 X += Unit_Travel_Dist * Math.Cos(Direction);
                 Y += Unit_Travel_Dist * Math.Sin(Direction);
+                // Console.WriteLine("move to {0} {1} ", X, Y);
 
                 Pos_H1[0] += Unit_Travel_Dist * Math.Cos(Direction);
                 Pos_H1[1] += Unit_Travel_Dist * Math.Sin(Direction);
@@ -157,7 +167,7 @@ namespace surveillance_system
                 Pos_V2[0] += Unit_Travel_Dist * Math.Cos(Direction);
 
                 // 목적지 도착 검사
-                if (isArrived())
+                if (isArrived() || outOfRange())
                 {
                     // Index out of range
                     updateDestination(); 

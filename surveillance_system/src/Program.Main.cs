@@ -257,7 +257,7 @@ namespace surveillance_system
             -------------------------------------------------------------------------*/
             // Configuration: surveillance cameras
             // constant
-            const int N_CCTV = 36;
+            const int N_CCTV =36;
             const int N_Ped = 10;
 
             Random rand = new Random();
@@ -284,8 +284,8 @@ namespace surveillance_system
             if (On_Road_Builder)
             {
                 Road_Width = 10000; // mm
-                Road_Interval = 23500; // mm, 10 meter
-                Road_N_Interval =2;
+                Road_Interval = 88000; // mm, 10 meter
+                Road_N_Interval =5;
             }
 
             bool Opt_Observation = false;
@@ -409,7 +409,7 @@ namespace surveillance_system
                     ped.define_PED(Ped_Width, Ped_Height, dst_x, dst_y, Ped_Velocity);
                     ped.setDirection();
                     ped.TTL = (int)Math.Ceiling((minDist / ped.Velocity) / aUnitTime);
-                    // ped.printPedInfo();
+                    ped.printPedInfo();
                 }
                 // cctv init
                 for (int i = 0; i < N_CCTV; i++)

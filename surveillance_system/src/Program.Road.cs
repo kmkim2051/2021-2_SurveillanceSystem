@@ -100,7 +100,8 @@ namespace surveillance_system
                 for(int i = 0; i < n_ped; i++)
                 {
                     Random rand = new Random();
-                    int intersectidx = rand.Next(8);
+                    int intersectidx = rand.Next(9);
+                    // Console.WriteLine(intersectidx);
                     double[,] newPos = getPointOfAdjacentRoad(intersectidx);
                     peds[i].X = Math.Round(newPos[0, 0]);
                     peds[i].Y = Math.Round(newPos[0, 1]);
@@ -180,8 +181,14 @@ namespace surveillance_system
                 double[,] newPos = new double[1, 2];
                 // newPos[0,0] = DST[idx, 0] + rand.Next(-width, width) * rand.NextDouble();
                 // newPos[0,1] = DST[idx, 1] + rand.Next(-width, width) * rand.NextDouble();
-                newPos[0, 0] = rand.Next((int)intersectionArea[idx, 0], (int)intersectionArea[idx, 1]);
-                newPos[0, 1] = rand.Next((int)intersectionArea[idx, 2], (int)intersectionArea[idx, 3]);
+
+                //20220512
+                // newPos[0, 0] = rand.Next((int)intersectionArea[idx, 0], (int)intersectionArea[idx, 1]);
+                // newPos[0, 1] = rand.Next((int)intersectionArea[idx, 2], (int)intersectionArea[idx, 3]);
+
+                newPos[0, 0] = DST[idx, 0] ;
+                newPos[0, 1] = DST[idx, 1];
+
                 // Console.WriteLine("newpos {0} {1}", newPos[0, 0], newPos[0, 1]);
                 return newPos;
             }
