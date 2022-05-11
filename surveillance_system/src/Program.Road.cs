@@ -169,13 +169,15 @@ namespace surveillance_system
                     else if (opt == 2)  i -= 1; // left
                     else if(opt == 3) i += 1; // right
 
-                } while (i< 0 || i >= lane_num || j < 0|| j >= lane_num);
+                } while (i< 0 || i >= lane_num || j < 0|| j >=  lane_num);
 
                 int idx = lane_num * i + j;
                 double[,] newPos = new double[1, 2];
-                newPos[0,0] = DST[idx, 0] + rand.Next(-width, width) * rand.NextDouble();
-                newPos[0,1] = DST[idx, 1] + rand.Next(-width, width) * rand.NextDouble();
-
+                // newPos[0,0] = DST[idx, 0] + rand.Next(-width, width) * rand.NextDouble();
+                // newPos[0,1] = DST[idx, 1] + rand.Next(-width, width) * rand.NextDouble();
+                newPos[0, 0] = rand.Next((int)intersectionArea[idx, 0], (int)intersectionArea[idx, 1]);
+                newPos[0, 1] = rand.Next((int)intersectionArea[idx, 2], (int)intersectionArea[idx, 3]);
+                Console.WriteLine("newpos {0} {1}", newPos[0, 0], newPos[0, 1]);
                 return newPos;
             }
 

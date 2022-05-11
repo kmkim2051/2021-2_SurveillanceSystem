@@ -284,8 +284,8 @@ namespace surveillance_system
             if (On_Road_Builder)
             {
                 Road_Width = 10000; // mm
-                Road_Interval = 235000; // mm, 10 meter
-                Road_N_Interval = 2;
+                Road_Interval = 88000; // mm, 10 meter
+                Road_N_Interval =6;
             }
 
             bool Opt_Observation = false;
@@ -479,8 +479,8 @@ namespace surveillance_system
             string[] detection = new string[(int)(Sim_Time / aUnitTime)]; // csv 파일 출력 위한 추적여부
             string header = "";
 
-            int road_min = -Road_Interval / 2;
-            int road_max = (Road_Interval + Road_Width) * 2 + Road_Interval / 2;
+            int road_min = 0;
+            int road_max = road.mapSize;
 
             // Console.WriteLine("simulatioin start: ");
             // simulation
