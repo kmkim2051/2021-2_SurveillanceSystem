@@ -35,21 +35,21 @@ namespace surveillance_system
                 {
                     double dist_h1 = Math
                             .Sqrt(Math.Pow(cctvs[i].X - peds[j].Pos_H1[0], 2) +
-                            Math.Pow(cctvs[i].Y - peds[j].Pos_H1[1], 2)) * 0.000001;
+                            Math.Pow(cctvs[i].Y - peds[j].Pos_H1[1], 2));
                     double dist_h2 = Math
                             .Sqrt(Math.Pow(cctvs[i].X - peds[j].Pos_H2[0], 2) +
-                            Math.Pow(cctvs[i].Y - peds[j].Pos_H2[1], 2)) * 0.000001;
+                            Math.Pow(cctvs[i].Y - peds[j].Pos_H2[1], 2));
                     double dist_v1 = Math
                             .Sqrt(Math.Pow(cctvs[i].X - peds[j].Pos_V1[0], 2) +
-                            Math.Pow(cctvs[i].Z - peds[j].Pos_V1[1], 2)) * 0.000001;
+                            Math.Pow(cctvs[i].Z - peds[j].Pos_V1[1], 2));
                     double dist_v2 = Math
                             .Sqrt(Math.Pow(cctvs[i].X - peds[j].Pos_V2[0], 2) +
-                            Math.Pow(cctvs[i].Z - peds[j].Pos_V2[1], 2)) * 0.000001;
+                            Math.Pow(cctvs[i].Z - peds[j].Pos_V2[1], 2));
 
                       
                     foreach (double survdist_h in cctvs[i].SurvDist_H)
                     {
-                        if (dist_h1 <= survdist_h && dist_h2 <= survdist_h)
+                        if (dist_h1 <= survdist_h*100*10 && dist_h2 <= survdist_h * 100 * 10)
                         {
                             candidate_detected_ped_h[i, j] = 1;
                         }
@@ -57,7 +57,7 @@ namespace surveillance_system
 
                     foreach (double survdist_v in cctvs[i].SurvDist_V)
                     {
-                        if (dist_v1 <= survdist_v && dist_v2 <= survdist_v)
+                        if (dist_v1 <= survdist_v * 100 * 10 && dist_v2 <= survdist_v * 100 * 10)
                         {
                             candidate_detected_ped_v[i, j] = 1;
                         }
@@ -339,8 +339,10 @@ namespace surveillance_system
                 }
                 road.printRoadInfo();
 
+
                 /*
-                *  보행자, cctv 초기 설정
+
+                //*  보행자, cctv 초기 설정
                 for (int i = 0; i < N_Ped; i++)
                 {
                     Console.WriteLine("{0}번째 보행자 = ({1}, {2}) ", i + 1, peds[i].X, peds[i].Y);
@@ -351,6 +353,7 @@ namespace surveillance_system
                     Console.WriteLine("{0}번째 cctv = ({1}, {2}) ", i + 1, cctvs[i].X, cctvs[i].Y);
                 }
                 */
+
 
                 //ped init
                 foreach(Pedestrian ped in peds)

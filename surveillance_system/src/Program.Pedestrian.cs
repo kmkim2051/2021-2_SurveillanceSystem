@@ -178,6 +178,7 @@ namespace surveillance_system
                 DST_X = Math.Round(newPos[0, 0]);
                 DST_Y = Math.Round(newPos[0, 1]);
             }
+
             public void walk()
             {
 

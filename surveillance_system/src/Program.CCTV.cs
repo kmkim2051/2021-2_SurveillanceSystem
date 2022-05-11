@@ -510,7 +510,7 @@ namespace surveillance_system
                     }
 
                     int idx = findMinIdx(temp);
-                    SurvDist_H[i] = Dist_Meter[idx] * 0.001;
+                    SurvDist_H[i] = Dist_Meter[idx];
 
                     for (int j = 0; j < len; j++)
                     {
@@ -518,7 +518,7 @@ namespace surveillance_system
                     }
 
                     idx = findMinIdx(temp);
-                    SurvDist_V[i] = Dist_Meter[idx] * 0.001;
+                    SurvDist_V[i] = Dist_Meter[idx];
                 }
             }
 
