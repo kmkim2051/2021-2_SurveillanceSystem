@@ -284,8 +284,8 @@ namespace surveillance_system
             if (On_Road_Builder)
             {
                 Road_Width = 10000; // mm
-                Road_Interval = 88000; // mm, 10 meter
-                Road_N_Interval =6;
+                Road_Interval = 23500; // mm, 10 meter
+                Road_N_Interval =2;
             }
 
             bool Opt_Observation = false;
@@ -313,6 +313,7 @@ namespace surveillance_system
             // double D_AOV = RadToDeg(2 * Math.Atan(Diag / (2 * Lens_FocalLength)));
             // (mm) distance
             double[] Dist = new double[10000];
+            int dist_len = 100000;
             double[] Height = new double[10000];
             for (int i = 0; i < 10000; i++)
             {
@@ -346,14 +347,17 @@ namespace surveillance_system
             if (On_Road_Builder)
             {
                 // 도로 정보 생성, 보행자 정보 생성
-                road.roadBuilder(Road_Width, Road_Interval, Road_N_Interval, N_CCTV, N_Ped); 
+                road.roadBuilder(Road_Width, Road_Interval, Road_N_Interval, N_CCTV, N_Ped);
+
+                /*
                 // debug 220428
                 for(int i = 0 ; i < N_CCTV; i++) {
-                  Console.Write(cctvs[i].X);
+                    Console.Write(cctvs[i].X);
                   Console.Write(", ");
                   Console.WriteLine(cctvs[i].Y);
 
                 }
+                */
                 road.printRoadInfo();
 
 

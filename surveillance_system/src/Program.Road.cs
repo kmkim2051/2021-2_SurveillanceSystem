@@ -128,10 +128,10 @@ namespace surveillance_system
 
                 // x좌표가 int 형식이라 캐스팅해서 완벽한 그리드는 아닐 수 있음
                 int intvl = (int)range / (rootN-1); 
-                Console.WriteLine("range rootN intvl {0} {1} {2}", range, rootN, intvl);
+                Console.WriteLine("mapsize range rootN intvl {0} {1} {2} {3} ", mapSize, range, rootN, intvl);
                 double startX = DST[0, 0];
                 double startY = DST[0, 1];
-
+                int[,] cctvPos = new int[51, 51];
                 int cctvIdx = 0;
                 for(int i = 0; i < rootN; i ++)
                 {
@@ -140,12 +140,17 @@ namespace surveillance_system
                     {
                         cctvs[cctvIdx].X = (int)startX;
                         cctvs[cctvIdx].Y = (int)startY;
-                        cctvIdx++;
+                        Console.WriteLine("cctv {0} {1} ", cctvs[cctvIdx].X , cctvs[cctvIdx].Y);
+                        // Console.WriteLine("pos arr {0} {1} ", cctvs[i].Y / 10000, cctvs[i].X / 10000);
+                        Console.WriteLine();
                         startX += intvl;
+                        cctvIdx++;
                     }
 
                     startY += intvl;
                 }
+
+
             }
 
             public double[,] getPointOfAdjacentRoad(int currAreaIdx)
@@ -177,7 +182,7 @@ namespace surveillance_system
                 // newPos[0,1] = DST[idx, 1] + rand.Next(-width, width) * rand.NextDouble();
                 newPos[0, 0] = rand.Next((int)intersectionArea[idx, 0], (int)intersectionArea[idx, 1]);
                 newPos[0, 1] = rand.Next((int)intersectionArea[idx, 2], (int)intersectionArea[idx, 3]);
-                Console.WriteLine("newpos {0} {1}", newPos[0, 0], newPos[0, 1]);
+                // Console.WriteLine("newpos {0} {1}", newPos[0, 0], newPos[0, 1]);
                 return newPos;
             }
 

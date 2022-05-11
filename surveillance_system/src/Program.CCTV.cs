@@ -480,10 +480,12 @@ namespace surveillance_system
                 PPM_H = new double[len];
                 PPM_V = new double[len];
 
+                
                 for (int i = 0; i < len; i++)
                 {
                     Dist_Meter[i] = dist[i] * 0.001;
                 }
+                
 
                 for (int i = 0; i < len; i++)
                 {
@@ -519,6 +521,8 @@ namespace surveillance_system
 
                     idx = findMinIdx(temp);
                     SurvDist_V[i] = Dist_Meter[idx];
+
+                    // Console.WriteLine("survdist h, v {0} {1} ", SurvDist_H[i], SurvDist_V[i]);
                 }
             }
 
