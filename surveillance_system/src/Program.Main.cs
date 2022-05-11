@@ -31,6 +31,7 @@ namespace surveillance_system
 
             for (int i = 0; i < N_CCTV; i++)
             {
+                
                 for (int j = 0; j < N_Ped; j++)
                 {
                     double dist_h1 = Math
@@ -44,9 +45,8 @@ namespace surveillance_system
                             Math.Pow(cctvs[i].Z - peds[j].Pos_V1[1], 2));
                     double dist_v2 = Math
                             .Sqrt(Math.Pow(cctvs[i].X - peds[j].Pos_V2[0], 2) +
-                            Math.Pow(cctvs[i].Z - peds[j].Pos_V2[1], 2));
+                            Math.Pow(cctvs[i].Z - peds[j].Pos_V2[1], 2)) ;
 
-                      
                     foreach (double survdist_h in cctvs[i].SurvDist_H)
                     {
                         if (dist_h1 <= survdist_h*100*10 && dist_h2 <= survdist_h * 100 * 10)
@@ -54,7 +54,6 @@ namespace surveillance_system
                             candidate_detected_ped_h[i, j] = 1;
                         }
                     }
-
                     foreach (double survdist_v in cctvs[i].SurvDist_V)
                     {
                         if (dist_v1 <= survdist_v * 100 * 10 && dist_v2 <= survdist_v * 100 * 10)
@@ -73,6 +72,10 @@ namespace surveillance_system
                 }
             }
 
+
+
+            // return returnArr;
+
             // 각 CCTV의 보행자 탐지횟수 계산
             int[] cctv_detecting_cnt = new int[N_CCTV];
             int[] cctv_missing_cnt = new int[N_CCTV];
@@ -90,6 +93,13 @@ namespace surveillance_system
 
                 for (int j = 0; j < N_Ped; j++)
                 {
+
+                    // 거리상 미탐지면 넘어감 
+                    if (candidate_detected_ped_h[i, j] != 1 || candidate_detected_ped_v[i, j] != 1)
+                    {                      
+                        continue;
+                    }
+                    
                     int h_detected = -1;
                     int v_detected = -1;
 
@@ -106,6 +116,7 @@ namespace surveillance_system
                         B[1] = peds[j].Pos_H2[1] - cctvs[i].Y;
                         double cosine_PED_h2 = InnerProduct(A, B) / (Norm(A) * Norm(B));
 
+                        // horizontal 각도 검사 
                         if (cosine_PED_h1 >= cosine_H_AOV && cosine_PED_h2 >= cosine_H_AOV)
                         {
                             //감지 됨
@@ -117,6 +128,7 @@ namespace surveillance_system
                         }
                     }
 
+                    // vertical  각도 검사 
                     if (candidate_detected_ped_v[i, j] == 1)
                     {
                       // Surv_SYS_v210202.m [line 260]
@@ -145,14 +157,8 @@ namespace surveillance_system
                         }
                     }
 
-                    
-                    // 거리상 미탐지 
-                    if(h_detected == -1 || v_detected == -1)
-                    {
-                        returnArr[j] = (returnArr[j] == 1 ? 1 : 0);
-                    }
-                    // 탐지 
-                    else if (h_detected == 1 && v_detected == 1)
+                  
+                    if (h_detected == 1 && v_detected == 1)
                     {
                         detected_map[i, j] = 1;
                         // 각 CCTV[i]의 보행자 탐지 횟수 증가
@@ -167,14 +173,25 @@ namespace surveillance_system
                     {
                         cctv_missing_cnt[i]++;
                         
-                        if(h_detected == 0) 
-                        missed_map_h[i, j] = 1;
+                        if(h_detected == 0) missed_map_h[i, j] = 1;
 
-                        if(v_detected == 0) 
-                        missed_map_v[i, j] = 1;
+                        if(v_detected == 0) missed_map_v[i, j] = 1;
 
                         returnArr[j] = (returnArr[j] == 1 ? 1 : -1);
+
+                        /*
+                        if(h_detected != 1)
+                        {
+                            Console.WriteLine("[{0}] horizontal 감지 못함", h_detected);
+                        }
+                        else if(v_detected != 1)
+                        {
+                            Console.WriteLine("[{0}] vertical 감지 못함 ", v_detected);
+                        }
+                        */
                     }
+
+
                 } // 탐지 여부 계산 완료
             }
 
@@ -241,7 +258,7 @@ namespace surveillance_system
             // Configuration: surveillance cameras
             // constant
             const int N_CCTV = 36;
-            const int N_Ped = 100;
+            const int N_Ped = 10;
 
             Random rand = new Random();
             const double Lens_FocalLength = 2.8; // mm, [2.8 3.6 6 8 12 16 25]
@@ -388,7 +405,7 @@ namespace surveillance_system
                     ped.define_PED(Ped_Width, Ped_Height, dst_x, dst_y, Ped_Velocity);
                     ped.setDirection();
                     ped.TTL = (int)Math.Ceiling((minDist / ped.Velocity) / aUnitTime);
-                    ped.printPedInfo();
+                    // ped.printPedInfo();
                 }
                 // cctv init
                 for (int i = 0; i < N_CCTV; i++)
@@ -449,7 +466,7 @@ namespace surveillance_system
             *  도로 정보 생성 + 보행자/CCTV 초기화 끝
             ------------------------------------------- */
 
-            double Sim_Time = 60;
+            double Sim_Time = 600;
             double Now = 0;
 
             // Console.WriteLine(">>> Simulating . . . \n");
@@ -518,6 +535,7 @@ namespace surveillance_system
 
                     peds[i].move();
                 }
+                
                 // 220317 cctv rotation
                 for(int i = 0 ; i < N_CCTV; i++)
                 {
@@ -535,6 +553,7 @@ namespace surveillance_system
                       cctvs[i].get_H_FOV(Dist, cctvs[i].WD, cctvs[i].Focal_Length, cctvs[i].ViewAngleH, cctvs[i].X, cctvs[i].Y);
                     }
                 }
+                
 
                 header += Convert.ToString(Math.Round(Now,1))+",";
                 Now += aUnitTime;
