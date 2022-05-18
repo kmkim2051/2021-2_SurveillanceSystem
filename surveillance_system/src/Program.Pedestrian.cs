@@ -137,16 +137,9 @@ namespace surveillance_system
             void downVelocity(); // 속도 감소
         }
 
-        interface Person: Movable
-        {
-            void walk(); 
-            void run(); 
-        }
+        interface Person: Movable {}
 
-        interface Vehicle: Movable
-        {
-            void run(); //
-        }
+        interface Vehicle: Movable {}
 
         public class Pedestrian : SurveillanceTarget, Person
         {
@@ -189,15 +182,6 @@ namespace surveillance_system
                 DST_Y = Math.Round(newPos[0, 1]);
             }
 
-            public void walk()
-            {
-
-            }
-            public void run()
-            {
-
-            }
-
         }
 
         public class Car: SurveillanceTarget, Vehicle
@@ -224,19 +208,17 @@ namespace surveillance_system
                     setDirection();
                 }
             }
+
             public void updateDestination()
             {
 
             }
+            
             public void downVelocity()
             {
 
             }
             public void upVelocity()
-            {
-
-            }
-            public void run()
             {
 
             }
@@ -275,10 +257,6 @@ namespace surveillance_system
 
             }
             public void upVelocity()
-            {
-
-            }
-            public void run()
             {
 
             }
