@@ -30,7 +30,7 @@ namespace surveillance_system
             public int interval;
             public int width;
 
-            public void roadBuilder(int wd, int intvl, int n_interval, int n_cctv, int n_ped)
+            public void roadBuilder(int wd, int intvl, int n_interval, int n_cctv, int n_obj)
             {
                 this.lane_num = n_interval + 1;
                 DST = new double[lane_num * lane_num, 2];
@@ -91,7 +91,8 @@ namespace surveillance_system
                 }
 
                 setCCTV(n_cctv, wd, lane_num);
-                setPed(n_ped);
+                setPed(n_obj);
+                //setCar(n_obj);
             }
 
             // 보행자 위치 처음 설정
@@ -248,6 +249,115 @@ namespace surveillance_system
                 }
 
                 return -1;
+            }
+
+            // set Car object
+            public void setCar(int n_car)
+            {
+                int[,] pedPos = new int[52,52];
+                for(int i = 0; i < n_car; i++)
+                {
+                    Random rand = new Random();
+                    int intersectidx = rand.Next(36);
+                    peds[i].X = DST[intersectidx, 0];
+                    peds[i].Y = DST[intersectidx, 1];
+
+                    int carintersectidx = rand.Next(4); // 0, 1, 2, 3
+                    if (carintersectidx == 0) {// down left
+                        peds[i].X -= width/4;
+                        peds[i].Y += width/4;
+                    }
+                    else if(carintersectidx == 1){// up left
+                        peds[i].X += width/4;
+                        peds[i].Y += width/4;
+                    }
+                    else if (carintersectidx == 2) {// up right
+                        peds[i].X += width/4;
+                        peds[i].Y -= width/4;
+                    }
+                    else if (carintersectidx == 3) {// down right
+                        peds[i].X -= width/4;
+                        peds[i].Y -= width/4;
+                    }
+			        pedPos[Convert.ToInt32((peds[i].Y)/10000), Convert.ToInt32((peds[i].X/10000))] += 1;
+                }
+            }
+
+            public double[,] getPointOfAdjacentIntersection(int currAreaIdx, double x, double y)
+            {
+                if(currAreaIdx == -1){
+                    return new double[,] { { 0, 0 } };
+                }
+
+                int i, j;
+                double curX, curY;
+                double midX = DST[currAreaIdx, 0];
+                double midY = DST[currAreaIdx, 1];
+
+                Random rand = new Random();
+                do
+                {
+                    i = currAreaIdx / lane_num;
+                    j = currAreaIdx % lane_num;
+                    curX = x;
+                    curY = y;
+
+                    int opt = rand.Next(0, 1);
+
+                    if ( x < midX && y > midY ){ // 0 down left
+                        if (opt == 0)// down
+                        { 
+                            curY -= width/2;
+                        }
+                        else if (opt == 1) //left
+                        { 
+                            curX -= (interval + width/2);
+                            i -= 1;
+                        }
+                    }
+                    else if ( x > midX && y > midY ){ // 1 up left
+                        if (opt == 0) // up
+                        {   
+                            curY += (interval + width/2);
+                            j += 1; 
+                        }
+                        else if (opt == 1) // left
+                        {
+                            curX -= width/2;
+                        }                        
+                    }
+                    else if ( x > midX && y < midY ){ // 2 up right
+                        if (opt == 0) // up
+                        {
+                            curY += width/2;
+                        }
+                        else if (opt == 1) // right
+                        {
+                            curX += (interval + width/2);
+                            i += 1;
+                        }                        
+                    }
+                    else if( x < midX && y < midY ){ // 3 down right
+                        if (opt == 0) // down
+                        {
+                            curY -= (interval + width/2);
+                            j -= 1;
+                        }
+                        else if (opt == 1) // right
+                        {
+                            curX += width/2;
+                        }                        
+                    }
+
+                } while (i< 0 || i >= lane_num || j < 0|| j >=  lane_num);
+
+                int idx = lane_num * i + j;
+                double[,] newPos = new double[1, 2];
+
+                newPos[0, 0] = curX;
+                newPos[0, 1] = curY;
+
+                return newPos;
             }
 
             public void printRoadInfo()
