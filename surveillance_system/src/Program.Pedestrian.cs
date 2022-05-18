@@ -211,16 +211,18 @@ namespace surveillance_system
 
             public void updateDestination()
             {
-
+                double[,] newPos = road.getPointOfAdjacentIntersection(road.getIdxOfIntersection(X, Y), X, Y);
+                DST_X = Math.Round(newPos[0, 0]);
+                DST_Y = Math.Round(newPos[0, 1]);
             }
             
             public void downVelocity()
             {
-
+                this.Velocity -= 0.1f;
             }
             public void upVelocity()
             {
-
+                this.Velocity += 0.1f;
             }
         }
 
