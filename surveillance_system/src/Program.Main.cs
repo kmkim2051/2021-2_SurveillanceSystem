@@ -257,7 +257,7 @@ namespace surveillance_system
             -------------------------------------------------------------------------*/
             // Configuration: surveillance cameras
             // constant
-            const int N_CCTV =36;
+            const int N_CCTV = 100;
             const int N_Ped = 10;
 
             Random rand = new Random();
@@ -312,10 +312,18 @@ namespace surveillance_system
 
             // double D_AOV = RadToDeg(2 * Math.Atan(Diag / (2 * Lens_FocalLength)));
             // (mm) distance
-            double[] Dist = new double[10000];
+            // double[] Dist = new double[10000];
+            // int dist_len = 100000;
+            // double[] Height = new double[10000];
+            // for (int i = 0; i < 10000; i++)
+            // {
+            //     Dist[i] = i;
+            //     Height[i] = i;
+            // }
+            double[] Dist = new double[25000];
             int dist_len = 100000;
-            double[] Height = new double[10000];
-            for (int i = 0; i < 10000; i++)
+            double[] Height = new double[25000];
+            for (int i = 0; i < 25000; i++)
             {
                 Dist[i] = i;
                 Height[i] = i;
@@ -348,7 +356,7 @@ namespace surveillance_system
             {
                 // 도로 정보 생성, 보행자 정보 생성
                 road.roadBuilder(Road_Width, Road_Interval, Road_N_Interval, N_CCTV, N_Ped);
-
+              
                 /*
                 // debug 220428
                 for(int i = 0 ; i < N_CCTV; i++) {
@@ -433,7 +441,9 @@ namespace surveillance_system
                     // 220104 초기 각도 설정
                     // cctvs[i].ViewAngleH = rand.NextDouble() * 360;
                     // cctvs[i].ViewAngleV = -35 - 20 * rand.NextDouble();
+
                     cctvs[i].setViewAngleH(rand.NextDouble() * 360);
+                    // cctvs[i].setViewAngleH(rand.Next(4) * 90);
                     cctvs[i].setViewAngleV(-35 - 20 * rand.NextDouble());
                     
                     cctvs[i].setFixMode(true); // default (rotate)
@@ -554,7 +564,8 @@ namespace surveillance_system
                       // Console.WriteLine("[Rotate] Now: {0}, Degree: {1}", Math.Round(Now, 2), cctvs[i].ViewAngleH);
                       cctvs[i].rotateHorizon(cctv_rotate_degree); // 90
                       // 회전후 수평 FOV update (지금은 전부 Update -> 시간 오래걸림 -> 일부만(일부FOV구성좌표만)해야할듯)
-                      cctvs[i].get_H_FOV(Dist, cctvs[i].WD, cctvs[i].Focal_Length, cctvs[i].ViewAngleH, cctvs[i].X, cctvs[i].Y);
+                      if(!cctvs[i].isFixed)
+                        cctvs[i].get_H_FOV(Dist, cctvs[i].WD, cctvs[i].Focal_Length, cctvs[i].ViewAngleH, cctvs[i].X, cctvs[i].Y);
                     }
                 }
                 

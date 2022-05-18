@@ -97,10 +97,13 @@ namespace surveillance_system
             // 보행자 위치 처음 설정
             public void setPed(int n_ped)
             {
+                int[,] pedPos = new int[52,52];
                 for(int i = 0; i < n_ped; i++)
                 {
                     Random rand = new Random();
-                    int intersectidx = rand.Next(9);
+                    // int intersectidx = rand.Next(9);
+                    int intersectidx = rand.Next(36);
+
                     // Console.WriteLine(intersectidx);
                     double[,] newPos = getPointOfAdjacentRoad(intersectidx);
                     peds[i].X = Math.Round(newPos[0, 0]);
@@ -118,11 +121,31 @@ namespace surveillance_system
                     //    peds[i].X =lane_v[rand.Next(0, lane_v.GetLength(0)), 0];
                     //    peds[i].Y = Math.Round(laneVector.Max() * opt);
                     //}
+			              pedPos[Convert.ToInt32((peds[i].Y)/10000), Convert.ToInt32((peds[i].X/10000))] += 1;
+                }
+		            // for문 끝나고
+                for(int i = 0 ; i < 52; i++) {
+                      Console.Write("{0}",i);
+                }
+                Console.WriteLine();
+                for(int i = 0 ; i < 52; i++) {
+                  Console.Write("{0} ",i);
+
+                  for(int j = 0 ; j < 52; j++) {
+                    if(pedPos[i,j] <= 0) 
+                      Console.Write(" ", pedPos[i,j]);
+                    else
+                      Console.Write("&", pedPos[i,j]);
+
+                }
+                  Console.WriteLine();
                 }
             }
 
             public void setCCTV(int n_cctv, int wd, int n_interval)
             {
+                int[,] cctvPos = new int[52,52];
+
 
                 double range = mapSize - width;
                 int rootN = (int)Math.Sqrt((double)n_cctv);
@@ -132,7 +155,7 @@ namespace surveillance_system
                 Console.WriteLine("mapsize range rootN intvl {0} {1} {2} {3} ", mapSize, range, rootN, intvl);
                 double startX = DST[0, 0];
                 double startY = DST[0, 1];
-                int[,] cctvPos = new int[51, 51];
+                
                 int cctvIdx = 0;
                 for(int i = 0; i < rootN; i ++)
                 {
@@ -145,13 +168,34 @@ namespace surveillance_system
                         // Console.WriteLine("pos arr {0} {1} ", cctvs[i].Y / 10000, cctvs[i].X / 10000);
                         Console.WriteLine();
                         startX += intvl;
+
+                        //debug
+			                  cctvPos[(cctvs[cctvIdx].Y)/10000, (cctvs[cctvIdx].X)/10000] += 1;
+                        
                         cctvIdx++;
+
                     }
 
                     startY += intvl;
+                			// 여기는 cctv 값 넣는 for문 안쪽
                 }
+		            // for문 끝나고
+                for(int i = 0 ; i < 52; i++) {
+                      Console.Write("{0}",i);
+                }
+                Console.WriteLine();
+                for(int i = 0 ; i < 52; i++) {
+                  Console.Write("{0} ",i);
 
+                  for(int j = 0 ; j < 52; j++) {
+                    if(cctvPos[i,j] <= 0) 
+                      Console.Write(" ", cctvPos[i,j]);
+                    else
+                      Console.Write("*", cctvPos[i,j]);
 
+                }
+                  Console.WriteLine();
+                }
             }
 
             public double[,] getPointOfAdjacentRoad(int currAreaIdx)
