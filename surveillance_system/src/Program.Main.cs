@@ -391,10 +391,15 @@ namespace surveillance_system
                     //int idx_minDist = 0;
                     //double[] Dist_Map = new double[road.DST.GetLength(0)];
 
-                    // 맨처음 위치에서 가장 가까운 도착지를 설정 (보행자 맨처음 위치는 line 314에서 setPed()로 설정)
+                    // 맨처음 위치에서 가장 가까운 도착지를 설정 (보행자 맨처음 위치는 setPed()로 설정)
                     double[,] newPos = road.getPointOfAdjacentRoad(road.getIdxOfIntersection(ped.X, ped.Y));
                     double dst_x = Math.Round(newPos[0, 0]);
                     double dst_y = Math.Round(newPos[0, 1]);
+
+                    // Car object일경우 가까운 도착지 설정
+                    // double[,] newPos = road.getPointOfAdjacentIntersection(road.getIdxOfIntersection(ped.X, ped.Y), ped.X, ped.Y);
+                    // double dst_x = Math.Round(newPos[0, 0]);
+                    // double dst_y = Math.Round(newPos[0, 1]);
 
                     //Calc_Dist_and_get_MinDist(road.DST, ped.X, ped.Y, ref Dist_Map, ref minDist, ref idx_minDist);
                     
