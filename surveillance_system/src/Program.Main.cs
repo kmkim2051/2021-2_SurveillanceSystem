@@ -449,7 +449,9 @@ namespace surveillance_system
 
                     cctvs[i].setViewAngleH(rand.NextDouble() * 360);
                     // cctvs[i].setViewAngleH(rand.Next(4) * 90);
-                    cctvs[i].setViewAngleV(-35 - 20 * rand.NextDouble());
+                    // cctvs[i].setViewAngleV(-35 - 20 * rand.NextDouble());
+                    cctvs[i].setViewAngleV(-45.0);
+                    
                     
                     cctvs[i].setFixMode(true); // default (rotate)
 
